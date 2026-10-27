@@ -305,6 +305,7 @@ dialog p{margin:0;font-size:13px;color:var(--muted)}
     </div>
     <div class="stats" id="stats"></div>
     <div class="actions">
+      <button class="btn primary" id="b-share" title="Ссылка на эту схему"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2M4.5 5.5 8 2l3.5 3.5M3 9v5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Поделиться</button>
       <button class="btn" id="b-undo" title="Отменить (Ctrl+Z)">Отменить</button>
       <button class="btn" id="b-redo" title="Повторить (Ctrl+Shift+Z)">Повторить</button>
       <button class="btn" id="b-example">Пример</button>
@@ -368,7 +369,7 @@ dialog p{margin:0;font-size:13px;color:var(--muted)}
 
 <dialog id="io">
   <form method="dialog">
-    <h2>Схема в JSON</h2>
+    <h2 id="io-title">Схема в JSON</h2>
     <p>Скопируйте текст, чтобы сохранить схему, или вставьте сохранённый и нажмите «Загрузить».</p>
     <textarea id="io-text" spellcheck="false" aria-label="Схема в формате JSON"></textarea>
     <p id="io-msg"></p>
@@ -498,7 +499,34 @@ function loadState() {
   try { const d = JSON.parse(localStorage.getItem(KEY)); if (valid(d)) return d; } catch (e) {}
   return JSON.parse(JSON.stringify(MY_SCHEME));
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} refreshShare(); }
+
+/* ---------- ссылка на схему: схема сжимается прямо в адрес после #s= ---------- */
+const b64u = bytes => { let t = ''; for (let i = 0; i < bytes.length; i += 0x8000) t += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(t).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+const unb64u = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), ch => ch.charCodeAt(0));
+const pipe = (bytes, stream) => new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer();
+async function encodeScheme(d) {
+  const raw = new TextEncoder().encode(JSON.stringify(d));
+  return window.CompressionStream ? 'z' + b64u(new Uint8Array(await pipe(raw, new CompressionStream('deflate-raw')))) : 'j' + b64u(raw);
+}
+async function decodeScheme(code) {
+  const bytes = unb64u(code.slice(1));
+  return JSON.parse(new TextDecoder().decode(code[0] === 'z' ? await pipe(bytes, new DecompressionStream('deflate-raw')) : bytes));
+}
+// ссылка готовится заранее: копирование и системное меню должны срабатывать сразу по нажатию
+let shareUrl = '';
+function refreshShare() { encodeScheme(S).then(c => { shareUrl = location.origin + location.pathname + '#s=' + c; }).catch(() => {}); }
+async function openShared() {
+  const m = location.hash.match(/^#s=([\w-]+)$/); if (!m) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  try {
+    const d = await decodeScheme(m[1]); if (!valid(d)) throw 0;
+    if (JSON.stringify(d) === JSON.stringify(S)) return;
+    snapshot(); S = d; sel = null; pending = null; save(); renderInspector(); render(); fitView();
+    toast('Открыта схема по ссылке. Вернуть свою — «Отменить»');
+  } catch (e) { toast('Не удалось прочитать схему из ссылки: она обрезана или повреждена'); }
+}
 function snapshot() { undo.push(JSON.stringify(S)); if (undo.length > 100) undo.shift(); redo = []; }
 function restore(json) { S = JSON.parse(json); if (sel && !selObj()) sel = null; pending = null; save(); renderInspector(); render(); }
 function doUndo() { if (!undo.length) return; redo.push(JSON.stringify(S)); restore(undo.pop()); }
@@ -1169,7 +1197,16 @@ $('#b-clear').addEventListener('click', e => {
   clearTimeout(clearT); b.classList.remove('confirm'); b.textContent = 'Очистить';
   snapshot(); S = {comps: [], wires: [], seq: 1}; sel = null; pending = null; save(); renderInspector(); render(); toast('Схема очищена. Отменить — Ctrl+Z');
 });
-$('#b-io').addEventListener('click', () => { $('#io-text').value = JSON.stringify(S, null, 1); $('#io-msg').textContent = ''; $('#io').showModal(); });
+$('#b-io').addEventListener('click', () => { $('#io-title').textContent = 'Схема в JSON'; $('#io-apply').hidden = false; $('#io-text').value = JSON.stringify(S, null, 1); $('#io-msg').textContent = ''; $('#io').showModal(); });
+function showLink(url, msg) { $('#io-title').textContent = 'Ссылка на схему'; $('#io-apply').hidden = true; $('#io-text').value = url; $('#io-msg').textContent = msg; $('#io').showModal(); $('#io-text').select(); }
+$('#b-share').addEventListener('click', () => {
+  const url = shareUrl;
+  if (!url) { toast('Ссылка ещё готовится, нажмите ещё раз'); refreshShare(); return; }
+  if (coarse && navigator.share) { navigator.share({title: 'Схема щитка', url}).catch(e => { if (e.name !== 'AbortError') showLink(url, 'Скопируйте ссылку и отправьте её.'); }); return; }
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(url).then(() => toast('Ссылка на схему скопирована'), () => showLink(url, 'Скопируйте ссылку вручную (Ctrl+C).'));
+  else showLink(url, 'Скопируйте ссылку вручную (Ctrl+C).');
+});
+window.addEventListener('hashchange', openShared);
 $('#io-copy').addEventListener('click', () => {
   const ta = $('#io-text');
   navigator.clipboard.writeText(ta.value).then(() => { $('#io-msg').textContent = 'Скопировано.'; }, () => { ta.select(); $('#io-msg').textContent = 'Текст выделен — скопируйте его вручную (Ctrl+C).'; });
@@ -1232,6 +1269,8 @@ S = loadState();
 render();
 fitView();
 renderInspector();
+refreshShare();
+openShared();
 </script>
 
 </body>
