@@ -884,7 +884,7 @@ function renderStats() {
 function updateHint() {
   const h = $('#hint');
   h.classList.toggle('active', !!pending);
-  if (VIEW) { h.textContent = coarse ? 'Только просмотр. Коснитесь элемента — подсветятся его провода.' : 'Только просмотр. Нажмите на элемент — подсветятся его провода. Поле двигается мышью, Ctrl + колесо — масштаб.'; return; }
+  if (VIEW) { h.textContent = coarse ? 'Только просмотр. Коснитесь элемента — подсветятся его провода, пустого места — снять выделение.' : 'Только просмотр. Нажмите на элемент — подсветятся его провода. Поле двигается мышью, Ctrl + колесо — масштаб.'; return; }
   h.textContent = pending
     ? (mode2 ? 'Выберите клемму L или N на другом элементе, вторая жила встанет сама. Esc — отмена.' : 'Выберите вторую клемму. Esc — отмена.')
     : (mode2 ? 'Двухжильный провод: от клеммы L или N, вторая жила подключится к соседней.' : coarse ? 'Коснитесь клеммы, потом второй — будет провод. Двумя пальцами — масштаб.' : 'Тяните провод от клеммы к клемме. Пустое место — двигать поле, Ctrl + колесо — масштаб.');
@@ -923,17 +923,10 @@ function updateReadout() {
 }
 
 function renderInspector() {
-  const box = $('#inspector'), o = selObj();
+  const box = $('#inspector'), o = VIEW ? null : selObj();  // в просмотре панели нет: выделение только подсвечивает провода
   let h;
   box.hidden = !o; box.classList.toggle('min', sheetMin); box.parentElement.classList.toggle('has-sheet', !!o);
   if (!o) { box.innerHTML = ''; return; }
-  const head = t => `<div class="sh-head"><h3>${t}</h3><button class="btn icon" id="f-min" aria-label="${sheetMin ? 'Развернуть' : 'Свернуть'}">${sheetMin ? '▴' : '▾'}</button><button class="btn icon" id="f-close" aria-label="Снять выбор">×</button></div>`;
-  if (VIEW) {  // в просмотре — только название и показания
-    box.innerHTML = head(sel.kind === 'wire' ? (o.cable ? 'Кабель 2×' + fmt(o.mm, o.mm % 1 ? 1 : 0) : (o.kind === 'L' ? 'Провод фазы' : 'Провод нуля') + ', ' + fmt(o.mm, o.mm % 1 ? 1 : 0) + ' мм²') : esc(o.name) + ' · ' + TITLE[o.type]) + '<div class="readout" id="readout"></div>';
-    $('#f-min').addEventListener('click', () => { sheetMin = !sheetMin; renderInspector(); });
-    $('#f-close').addEventListener('click', () => select(null));
-    updateReadout(); return;
-  }
   if (sel.kind === 'wire' && o.cable) {
     h = `<div class="sh-head"><h3>Кабель 2×${fmt(o.mm, o.mm % 1 ? 1 : 0)}</h3><button class="btn icon" id="f-min" aria-label="${sheetMin ? 'Развернуть' : 'Свернуть'}">${sheetMin ? '▴' : '▾'}</button><button class="btn icon" id="f-close" aria-label="Снять выбор">×</button></div>
       <p class="lead">Фаза и ноль в одной оболочке, как ВВГнг 2×${fmt(o.mm, o.mm % 1 ? 1 : 0)}.</p>
@@ -1185,7 +1178,7 @@ function endPointer(e) {
   }
   if (drag?.mode === 'move' && drag.moved) save();
   // на телефоне выделение снимается только крестиком, чтобы можно было листать схему
-  if (drag?.mode === 'pan' && !drag.moved && !coarse && sel) select(null);
+  if (drag?.mode === 'pan' && !drag.moved && (!coarse || VIEW) && sel) select(null);
   drag = null;
 }
 svg.addEventListener('pointerup', endPointer);
