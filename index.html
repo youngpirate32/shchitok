@@ -23,7 +23,7 @@ img{max-width:100%}
   --module:#fbfbf8; --module-2:#e2e5e1; --module-edge:#9ea8a1; --slot:#3a423f; --screw:#eef0ec;
   --accent:#c9500c; --accent-ink:#ffffff; --accent-soft:#f6dccb;
   --wire-l:#7a4520; --wire-n:#1f5fc8; --n-soft:#d7e2f5; --flow:rgba(255,255,255,.85);
-  --brass:#c79a3b; --brass-dk:#8a6a25; --wago:#ee7a00; --wago-body:#e4e8ea; --sheath:#f1f2ef; --sheath-edge:#8b9590; --sel:#ffd000;
+  --brass:#c79a3b; --brass-dk:#8a6a25; --wago:#ee7a00; --wago-body:#e4e8ea; --sheath:#f1f2ef; --sheath-edge:#8b9590; --sel:#ffd000; --rail:#c3c8ca; --rail-edge:#7f8689;
   --bakelite:#2a2522; --bakelite-2:#3d3631; --cap:#ece4d2; --cap-ink:#3a2f25; --sov-red:#c62a1f; --sov-glass:#cfd6cc; --sov-ink:#ece6d8; --sov-glass-ink:#2a2f2a;
   --meter:#c9cec9; --lcd:#bccaa9; --lcd-ink:#1d2a18; --led-off:#6a726e;
   --sup:#1b2120; --sup-ink:#f1f3f0; --sup-muted:#a3ada7;
@@ -38,7 +38,7 @@ img{max-width:100%}
   --module:#2c3331; --module-2:#232a28; --module-edge:#4f5a55; --slot:#0d1110; --screw:#3a423f;
   --accent:#f07b3a; --accent-ink:#1a0f08; --accent-soft:#3d2416;
   --wire-l:#b9773f; --wire-n:#5089f0; --n-soft:#1c2a40; --flow:rgba(255,255,255,.75);
-  --brass:#c9a24e; --brass-dk:#7d6022; --wago:#f08a1c; --wago-body:#3a424a; --sheath:#3b4341; --sheath-edge:#66716c; --sel:#ffe014;
+  --brass:#c9a24e; --brass-dk:#7d6022; --wago:#f08a1c; --wago-body:#3a424a; --sheath:#3b4341; --sheath-edge:#66716c; --sel:#ffe014; --rail:#7a8285; --rail-edge:#4c5457;
   --meter:#2a302e; --lcd:#9db48a; --lcd-ink:#13200e; --led-off:#3b4340;
   --sup:#d9dfdb; --sup-ink:#141817; --sup-muted:#5d6762;
   --live:#f5c04a; --ok:#4cb276; --warn:#e0a33a; --err:#ef5d4d;
@@ -50,7 +50,7 @@ img{max-width:100%}
   --module:#2c3331; --module-2:#232a28; --module-edge:#4f5a55; --slot:#0d1110; --screw:#3a423f;
   --accent:#f07b3a; --accent-ink:#1a0f08; --accent-soft:#3d2416;
   --wire-l:#b9773f; --wire-n:#5089f0; --n-soft:#1c2a40; --flow:rgba(255,255,255,.75);
-  --brass:#c9a24e; --brass-dk:#7d6022; --wago:#f08a1c; --wago-body:#3a424a; --sheath:#3b4341; --sheath-edge:#66716c; --sel:#ffe014;
+  --brass:#c9a24e; --brass-dk:#7d6022; --wago:#f08a1c; --wago-body:#3a424a; --sheath:#3b4341; --sheath-edge:#66716c; --sel:#ffe014; --rail:#7a8285; --rail-edge:#4c5457;
   --meter:#2a302e; --lcd:#9db48a; --lcd-ink:#13200e; --led-off:#3b4340;
   --sup:#d9dfdb; --sup-ink:#141817; --sup-muted:#5d6762;
   --live:#f5c04a; --ok:#4cb276; --warn:#e0a33a; --err:#ef5d4d;
@@ -209,6 +209,29 @@ kbd{font:500 11px var(--f-mono);border:1px solid var(--line);border-bottom-width
 .sov-fine{font:400 7.5px var(--f-mono);fill:var(--sov-glass-ink)}
 .sov-cover{fill:var(--bakelite-2);stroke:var(--module-edge)}
 .sov-n{font:600 10px var(--f-mono);fill:var(--sov-ink);text-anchor:middle}
+.rail-label{paint-order:stroke;stroke:var(--panel);stroke-width:4px;stroke-linejoin:round}
+.rail-bg{fill:none;stroke:var(--line);stroke-dasharray:4 4}
+.rail{fill:var(--rail);stroke:var(--rail-edge)}
+.rail-lip{fill:var(--rail-edge);opacity:.55}
+.rail-stop{fill:var(--slot)}
+.rail-tick{stroke:var(--rail-edge);stroke-width:1;opacity:.6}
+.rcd-test{fill:#2f6fd6}
+.rcd-t{font:700 7px var(--f-mono);fill:#fff;text-anchor:middle}
+.stab-lcd{fill:#0f2318}
+.stab-v{font:600 15px var(--f-mono);fill:#3fe07a;text-anchor:middle}
+.stab-v.off{fill:#3a5444}
+.sock-face{fill:var(--module-2);stroke:var(--module-edge)}
+.sock-face.on{stroke:var(--ok);stroke-width:1.6}
+.sock-in{fill:var(--module);stroke:var(--module-edge)}
+.sock-pin{fill:var(--slot)}
+.btn-plate{fill:var(--module);stroke:var(--module-edge)}
+.btn-ring{fill:var(--module-2);stroke:var(--module-edge)}
+.btn-key{fill:var(--surface);stroke:var(--muted);stroke-width:1.4;cursor:pointer}
+.btn-key.down{fill:var(--live);stroke:var(--ink)}
+.bell-ico{fill:var(--module-2);stroke:var(--muted);stroke-width:1.4}
+.bell-ico.on{fill:var(--live);stroke:var(--ink);transform-box:fill-box;transform-origin:50% 0;animation:ring .3s ease-in-out infinite alternate}
+@keyframes ring{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+.din-n{font:600 8px var(--f-mono);fill:var(--muted)}
 .wago-body{fill:var(--wago-body);stroke:var(--module-edge)}
 .wago-lever{fill:var(--wago)}
 .wago-hole{fill:var(--slot)}
@@ -235,6 +258,9 @@ kbd{font:500 11px var(--f-mono);border:1px solid var(--line);border-bottom-width
 .wire.fault .core{stroke:var(--err);animation:blink .5s steps(2,jump-none) infinite}
 .wire .halo{fill:none;stroke:var(--sel);opacity:.75;stroke-linejoin:round;stroke-linecap:round}
 .wire .flow{fill:none;stroke:var(--flow);stroke-dasharray:2 12;stroke-linecap:round;animation:flow .9s linear infinite;pointer-events:none}
+.wire .flow.rev{animation-direction:reverse}
+.boxsel{fill:var(--sel);fill-opacity:.08;stroke:var(--sel);stroke-width:1.5;stroke-dasharray:6 4;pointer-events:none}
+#b-box.on{background:var(--accent-soft);border-color:var(--accent)}
 .term{cursor:crosshair}
 .t-hit{fill:transparent}
 .t-ring{fill:var(--screw);stroke-width:2.2}
@@ -249,7 +275,7 @@ kbd{font:500 11px var(--f-mono);border:1px solid var(--line);border-bottom-width
 @keyframes disk{from{transform:translateX(0)}to{transform:translateX(130px)}}
 @keyframes flow{to{stroke-dashoffset:-14}}
 @keyframes blink{50%{opacity:.25}}
-@media (prefers-reduced-motion: reduce){.wire .flow,.led.blink,.wire.fault .core,.sov-mark.spin{animation:none}}
+@media (prefers-reduced-motion: reduce){.wire .flow,.led.blink,.wire.fault .core,.sov-mark.spin,.bell-ico.on{animation:none}}
 
 dialog{border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:16px;width:min(560px,calc(100vw - 32px));box-sizing:border-box}
 dialog::backdrop{background:rgba(10,14,13,.45)}
@@ -328,6 +354,7 @@ dialog p{margin:0;font-size:13px;color:var(--muted)}
   <div class="scrim" id="scrim"></div>
   <aside class="palette" aria-label="Элементы">
     <div class="pal-head"><h2>Добавить на схему</h2><button class="btn icon" id="b-pal-close" aria-label="Закрыть">×</button></div>
+    <div class="pal-group"><h2>DIN-рейка</h2><div class="pal-list" id="pal-din"></div></div>
     <div class="pal-group"><h2>Щит</h2><div class="pal-list" id="pal-panel"></div></div>
     <div class="pal-group"><h2>Потребители</h2><div class="pal-list" id="pal-loads"></div></div>
     <div class="pal-group">
@@ -336,6 +363,7 @@ dialog p{margin:0;font-size:13px;color:var(--muted)}
         <button id="m-1" class="on" aria-pressed="true">Одна жила</button>
         <button id="m-2" aria-pressed="false">Две жилы</button>
       </div>
+      <label class="fld"><span>Шаг проводов</span><select id="f-pitch"><option value="10">10 px — плотно</option><option value="20">20 px</option><option value="30">30 px — просторно</option></select></label>
       <div class="legend">
         <div><i class="sw L"></i>Фаза L — коричневый</div>
         <div><i class="sw N"></i>Ноль N — синий</div>
@@ -362,6 +390,7 @@ dialog p{margin:0;font-size:13px;color:var(--muted)}
         <button class="btn icon" id="z-out" aria-label="Уменьшить">−</button>
         <output id="z-val">100%</output>
         <button class="btn icon" id="z-in" aria-label="Увеличить">+</button>
+        <button class="btn edit-only" id="b-box" aria-pressed="false" title="Выделить рамкой (или Shift + тянуть по пустому месту)"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.5 2"/></svg><span class="btn-label">Рамка</span></button>
         <button class="btn" id="z-fit" title="Показать всю схему">Вся схема</button>
         <button class="btn" id="b-full" title="Только схема на весь экран"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span class="btn-label">Только схема</span></button>
       </div>
@@ -415,7 +444,7 @@ const RATINGS = [6, 10, 13, 16, 20, 25, 32, 40, 50, 63];
 const KINDS = {flat: 'Квартира', light: 'Свет', socket: 'Розетки', stove: 'Плита', heater: 'Бойлер'};
 const KIND_KW = {flat: 7, light: 0.4, socket: 2.2, stove: 5.5, heater: 2};
 const KIND_MM = {flat: 10, light: 1.5, socket: 2.5, stove: 6, heater: 2.5};
-const TITLE = {supply: 'Ввод', br1: 'Автомат 1P', br2: 'Автомат 2P', meter: 'Счётчик', nbus: 'Нулевая шина', wago: 'Клемма WAGO', wago22: 'WAGO 2×2 проходная', fuse: 'Пробка ПАР', node: 'Точка соединения', load: 'Потребитель'};
+const TITLE = {supply: 'Ввод', br1: 'Автомат 1P', br2: 'Автомат 2P', meter: 'Счётчик', nbus: 'Нулевая шина', wago: 'Клемма WAGO', rail: 'DIN-рейка', bellbtn: 'Кнопка', dinbus: 'Шина на DIN-рейку', rcd: 'УЗО', stab: 'Стабилизатор напряжения', dinsock: 'Розетка на DIN-рейку', bell: 'Звонок', wago22: 'WAGO 2×2 проходная', fuse: 'Пробка ПАР', node: 'Точка соединения', load: 'Потребитель'};
 const WAGO_I = 32;  // WAGO 221: до 32 А
 // В серии 221 есть 412, 413 и 415; на 4 гнезда своего артикула нет, подписываем без него
 const FUSE_RATINGS = [6, 10, 16, 25];
@@ -443,11 +472,30 @@ const T = {
     {k: 'Nin', x: 60, y: 0, s: -1, r: 'N', tip: 'N — вход'},
     {k: 'Lout', x: 20, y: 100, s: 1, r: 'L', tip: 'L — выход'},
     {k: 'Nout', x: 60, y: 100, s: 1, r: 'N', tip: 'N — выход'}]},
-  meter: {w: () => 150, h: () => 120, terms: () => [
+  meter: {w: c => c.model === 'din' ? 160 : 150, h: c => c.model === 'din' ? 100 : 120, terms: c => c.model === 'din' ? [
+    {k: '1', x: 40, y: 0, s: -1, r: 'L', tip: '1 — фаза, вход'},
+    {k: '3', x: 120, y: 0, s: -1, r: 'N', tip: '3 — ноль, вход'},
+    {k: '2', x: 40, y: 100, s: 1, r: 'L', tip: '2 — фаза, выход'},
+    {k: '4', x: 120, y: 100, s: 1, r: 'N', tip: '4 — ноль, выход'}] : [
     {k: '1', x: 25, y: 120, s: 1, r: 'L', tip: '1 — фаза, вход'},
     {k: '2', x: 55, y: 120, s: 1, r: 'L', tip: '2 — фаза, выход'},
     {k: '3', x: 95, y: 120, s: 1, r: 'N', tip: '3 — ноль, вход'},
     {k: '4', x: 125, y: 120, s: 1, r: 'N', tip: '4 — ноль, выход'}]},
+  // DIN-модули: ширина кратна MOD (один модуль, 18 мм), высота как у автомата
+  rail: {w: c => c.n * MOD + 20, h: () => 100, terms: () => []},
+  rcd: {w: () => 80, h: () => 100, terms: () => [
+    {k: 'Lin', x: 20, y: 0, s: -1, r: 'L', tip: 'L — вход'}, {k: 'Nin', x: 60, y: 0, s: -1, r: 'N', tip: 'N — вход'},
+    {k: 'Lout', x: 20, y: 100, s: 1, r: 'L', tip: 'L — выход'}, {k: 'Nout', x: 60, y: 100, s: 1, r: 'N', tip: 'N — выход'}]},
+  stab: {w: () => 80, h: () => 100, terms: () => [
+    {k: 'Lin', x: 20, y: 0, s: -1, r: 'L', tip: 'L — вход сети'}, {k: 'Nin', x: 60, y: 0, s: -1, r: 'N', tip: 'N — вход сети'},
+    {k: 'Lout', x: 20, y: 100, s: 1, r: 'L', tip: 'L — выход 230 В'}, {k: 'Nout', x: 60, y: 100, s: 1, r: 'N', tip: 'N — выход'}]},
+  dinsock: {w: () => 80, h: () => 100, terms: () => [
+    {k: 'L', x: 20, y: 0, s: -1, r: 'L', tip: 'L — фаза'}, {k: 'N', x: 60, y: 0, s: -1, r: 'N', tip: 'N — ноль'}]},
+  dinbus: {w: c => c.mw * MOD, h: () => 100, terms: c => dinbusLayout(c).pts.map((p, i) => ({k: 't' + i, ...p, s: 0, r: 'X', tip: 'Гнездо шины, все гнёзда соединены'}))},
+  bellbtn: {w: () => 56, h: () => 64, terms: () => [
+    {k: 'in', x: 28, y: 0, s: -1, r: 'L', tip: 'Вход, фаза'}, {k: 'out', x: 28, y: 64, s: 1, r: 'L', tip: 'Выход'}]},
+  bell: {w: () => 40, h: () => 100, terms: () => [
+    {k: 'L', x: 12, y: 0, s: -1, r: 'L', tip: 'L — фаза'}, {k: 'N', x: 28, y: 0, s: -1, r: 'N', tip: 'N — ноль'}]},
   nbus: {w: c => c.n * 24 + 16, h: () => 26, terms: c => Array.from({length: c.n}, (_, i) =>
     ({k: 't' + i, x: 20 + i * 24, y: 26, s: 1, r: 'N', tip: 'Клемма нулевой шины'}))},
   wago: {w: c => c.n * 20 + 12, h: () => 34, terms: c => Array.from({length: c.n}, (_, i) =>
@@ -469,13 +517,15 @@ const svg = $('#svg'), wrap = $('#wrap');
 let S, sel = null, pending = null, drag = null, zoom = 1, A = null, rubberAt = null, mode2 = false;
 const view = {x: 0, y: 0}, pointers = new Map();
 const coarse = !!window.matchMedia?.('(pointer: coarse)').matches, app = document.querySelector('.app');
+let multi = new Set(), boxMode = false;  // массовое выделение: id элементов; boxMode — рамка вместо прокрутки (для телефона)
 let full = false, sheetMin = false, focusW = new Set(), dimOn = false;  // view — мировые координаты левого верхнего угла поля
 let undo = [], redo = [], editing = false;
 
 // flip: клеммы переносятся на противоположную сторону (входы автомата снизу и т. п.)
 // swap: фаза и ноль меняются местами слева направо; у счётчика пары 1–2 и 3–4 сохраняют порядок
-const CAN_SWAP = {supply: 1, br2: 1, meter: 1, load: 1};
-const swapX = (c, x) => c.type === 'meter' ? (x < 75 ? x + 70 : x - 70) : T[c.type].w(c) - x;
+const MOD = 40;
+const CAN_SWAP = {supply: 1, br2: 1, meter: 1, load: 1, rcd: 1, stab: 1, dinsock: 1, bell: 1};
+const swapX = (c, x) => c.type === 'meter' && c.model !== 'din' ? (x < 75 ? x + 70 : x - 70) : T[c.type].w(c) - x;
 const terms = c => {
   let ts = T[c.type].terms(c);
   if (c.flip) { const h = T[c.type].h(c); ts = ts.map(t => ({...t, y: h - t.y, s: -t.s})); }
@@ -485,6 +535,37 @@ const terms = c => {
 const cw = c => T[c.type].w(c), chh = c => T[c.type].h(c);
 const tk = (c, k) => c.id + ':' + k;
 const comp = id => S.comps.find(c => c.id === id);
+const isLoad = c => c.type === 'load' || c.type === 'dinsock' || c.type === 'bell';
+// Гнёзда шины: в один ряд поперёк, если влезают; иначе в одну линию вдоль; иначе сеткой
+function dinbusLayout(c) {
+  const w = c.mw * MOD, perRow = Math.floor((w - 8) / 16), perCol = 6;
+  if (c.n <= perRow) { const x0 = w / 2 - (c.n - 1) * 8;
+    return {pts: Array.from({length: c.n}, (_, i) => ({x: Math.round(x0 + i * 16), y: 50})), bars: [{x: 5, y: 45, w: w - 10, h: 10}]}; }
+  if (c.n <= perCol) { const dy = 76 / (c.n - 1);
+    return {pts: Array.from({length: c.n}, (_, i) => ({x: w / 2, y: Math.round(12 + i * dy)})), bars: [{x: w / 2 - 5, y: 5, w: 10, h: 90}]}; }
+  const cols = c.mw * 2, rows = Math.ceil(c.n / cols), dy = 76 / (rows - 1);
+  return {pts: Array.from({length: c.n}, (_, i) => ({x: 12 + (i % cols) * 16, y: Math.round(12 + Math.floor(i / cols) * dy)})),
+    bars: Array.from({length: cols}, (_, j) => ({x: 7 + j * 16, y: 5, w: 10, h: 90}))};
+}
+const isDin = c => ['br1', 'br2', 'rcd', 'stab', 'dinsock', 'bell', 'dinbus'].includes(c.type) || (c.type === 'meter' && c.model === 'din');
+const RCD_RATINGS = [16, 25, 40, 63], RCD_LEAKS = [10, 30, 100], STAB_RATINGS = [10, 16, 25];
+/* ---------- DIN-рейка: модули защёлкиваются в ячейки по ширине ---------- */
+const onRail = (m, r) => m.y === r.y && m.x >= r.x + 10 && m.x + T[m.type].w(m) <= r.x + 10 + r.n * MOD;
+const modulesOn = r => S.comps.filter(m => isDin(m) && onRail(m, r));
+const mods = c => Math.round(T[c.type].w(c) / MOD);
+function slotFree(r, k, n, except) {
+  return !modulesOn(r).some(m => { if (m.id === except) return false; const a = Math.round((m.x - r.x - 10) / MOD); return a < k + n && k < a + mods(m); });
+}
+// ближайшая свободная ячейка на рейке рядом с (x, y), или null, если рейки рядом нет
+function snapToRail(c, x, y) {
+  const n = mods(c);
+  for (const r of S.comps.filter(r => r.type === 'rail').sort((a, b) => Math.abs(a.y - y) - Math.abs(b.y - y))) {
+    if (Math.abs(y - r.y) > 45 || x + n * MOD < r.x || x > r.x + T.rail.w(r)) continue;
+    const k0 = clamp(Math.round((x - r.x - 10) / MOD), 0, r.n - n);
+    for (let d = 0; d <= r.n; d++) for (const k of [k0 - d, k0 + d]) if (k >= 0 && k <= r.n - n && slotFree(r, k, n, c.id)) return {x: r.x + 10 + k * MOD, y: r.y};
+  }
+  return null;
+}
 const isBr = c => c.type === 'br1' || c.type === 'br2' || c.type === 'fuse';
 const snap = v => Math.round(v / GRID) * GRID;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -519,7 +600,7 @@ function example() {
 }
 const valid = d => d && Array.isArray(d.comps) && Array.isArray(d.wires) && d.comps.every(c => T[c.type] && c.id) && d.wires.every(w => w.a && w.b);
 // Схема, с которой открывается страница, пока в браузере ничего не сохранено
-const MY_SCHEME = {"comps":[{"id":"c6","type":"supply","x":360,"y":-90,"name":"Ввод","allowKw":10,"swap":true},{"id":"c19","type":"load","x":140,"y":20,"name":"Кухня и спальня","kind":"flat","kw":7,"flip":true,"swap":true},{"id":"c20","type":"load","x":750,"y":-60,"name":"Зал","kind":"flat","kw":7,"swap":false,"flip":true},{"id":"c30","type":"load","x":590,"y":-60,"name":"Зал","kind":"flat","kw":7,"flip":true},{"id":"c33","type":"wago","x":710,"y":130,"name":"X5","n":2},{"id":"c36","type":"wago","x":710,"y":210,"name":"X6","n":2},{"id":"c47","type":"nbus","x":180,"y":660,"name":"Шина N","n":4,"flip":true},{"id":"c54","type":"fuse","x":570,"y":200,"name":"FU1","rating":16,"on":true},{"id":"c57","type":"fuse","x":250,"y":190,"name":"FU2","rating":16,"on":true},{"id":"c61","type":"meter","x":390,"y":640,"name":"PI1","model":"soviet","kwh":4217.3,"flip":true},{"id":"c71","type":"wago22","x":480,"y":210,"name":"X7","color":"blue","color2":"orange","split":"rows"},{"id":"c72","type":"wago22","x":340,"y":200,"name":"X8","color":"orange","color2":"blue","split":"rows"}],"wires":[{"id":"w35","a":"c33:t1","b":"c20:L","kind":"L","mm":10},{"id":"w37","a":"c36:t1","b":"c20:N","kind":"N","mm":10},{"id":"w51","a":"c19:N","b":"c47:t0","kind":"N","mm":10},{"id":"w55","a":"c54:in","b":"c30:L","kind":"L","mm":10},{"id":"w56","a":"c54:in","b":"c33:t0","kind":"L","mm":2.5},{"id":"w58","a":"c57:out","b":"c54:out","kind":"L","mm":10},{"id":"w60","a":"c57:in","b":"c19:L","kind":"L","mm":10},{"id":"w63","a":"c61:1","b":"c57:out","kind":"L","mm":10},{"id":"w68","a":"c61:3","b":"c47:t3","kind":"N","mm":10},{"id":"w69","a":"c47:t2","b":"c36:t0","kind":"N","mm":2.5},{"id":"w70","a":"c47:t1","b":"c30:N","kind":"N","mm":10},{"id":"w73","a":"c6:N","b":"c72:b1","kind":"N","mm":2.5},{"id":"w74","a":"c72:b0","b":"c61:4","kind":"N","mm":2.5},{"id":"w75","a":"c61:2","b":"c71:b1","kind":"L","mm":2.5},{"id":"w76","a":"c71:b0","b":"c6:L","kind":"L","mm":2.5}],"seq":77};
+const MY_SCHEME = {"comps":[{"id":"c6","type":"supply","x":330,"y":20,"name":"Ввод","allowKw":10,"swap":true},{"id":"c19","type":"load","x":140,"y":20,"name":"Кухня и спальня","kind":"flat","kw":7,"flip":true,"swap":true},{"id":"c20","type":"load","x":680,"y":20,"name":"Зал","kind":"flat","kw":7,"swap":false,"flip":true},{"id":"c30","type":"load","x":510,"y":20,"name":"Зал","kind":"flat","kw":7,"flip":true},{"id":"c33","type":"wago","x":640,"y":160,"name":"X5","n":2},{"id":"c36","type":"wago","x":640,"y":250,"name":"X6","n":2},{"id":"c47","type":"nbus","x":240,"y":430,"name":"Шина N","n":4,"flip":true},{"id":"c54","type":"fuse","x":530,"y":190,"name":"FU1","rating":16,"on":true},{"id":"c57","type":"fuse","x":250,"y":200,"name":"FU2","rating":16,"on":true},{"id":"c61","type":"meter","x":380,"y":420,"name":"PI1","model":"soviet","kwh":4217.3,"flip":true},{"id":"c71","type":"wago22","x":440,"y":210,"name":"X7","color":"blue","color2":"orange","split":"rows"},{"id":"c72","type":"wago22","x":340,"y":210,"name":"X8","color":"orange","color2":"blue","split":"rows"}],"wires":[{"id":"w35","a":"c33:t1","b":"c20:L","kind":"L","mm":10},{"id":"w37","a":"c36:t1","b":"c20:N","kind":"N","mm":10},{"id":"w51","a":"c19:N","b":"c47:t0","kind":"N","mm":10},{"id":"w55","a":"c54:in","b":"c30:L","kind":"L","mm":10},{"id":"w56","a":"c54:in","b":"c33:t0","kind":"L","mm":2.5},{"id":"w58","a":"c57:out","b":"c54:out","kind":"L","mm":10},{"id":"w60","a":"c57:in","b":"c19:L","kind":"L","mm":10},{"id":"w63","a":"c61:1","b":"c57:out","kind":"L","mm":10},{"id":"w68","a":"c61:3","b":"c47:t3","kind":"N","mm":10},{"id":"w69","a":"c47:t2","b":"c36:t0","kind":"N","mm":2.5},{"id":"w70","a":"c47:t1","b":"c30:N","kind":"N","mm":10},{"id":"w73","a":"c6:N","b":"c72:b1","kind":"N","mm":2.5},{"id":"w74","a":"c72:b0","b":"c61:4","kind":"N","mm":2.5},{"id":"w75","a":"c61:2","b":"c71:b1","kind":"L","mm":2.5},{"id":"w76","a":"c71:b0","b":"c6:L","kind":"L","mm":2.5}],"seq":115};
 function loadState() {
   try { const d = JSON.parse(localStorage.getItem(KEY)); if (valid(d)) return d; } catch (e) {}
   return JSON.parse(JSON.stringify(MY_SCHEME));
@@ -540,6 +621,7 @@ async function decodeScheme(code) {
   return JSON.parse(new TextDecoder().decode(code[0] === 'z' ? await pipe(bytes, new DecompressionStream('deflate-raw')) : bytes));
 }
 // ссылка готовится заранее: копирование и системное меню должны срабатывать сразу по нажатию
+const setUrl = u => { try { history.replaceState(null, '', u); } catch (e) {} };
 let VIEW = new URLSearchParams(location.search).has('view'), viewingShared = false;  // ?view — только просмотр
 let shareCode = '';
 const shareLink = view => location.origin + location.pathname + (view ? '?view' : '') + '#s=' + shareCode;
@@ -547,7 +629,7 @@ function refreshShare() { encodeScheme(S).then(c => { shareCode = c; }).catch(()
 async function openShared() {
   const m = location.hash.match(/^#s=([\w-]+)$/); if (!m) return;
   // в просмотре ссылка остаётся в адресе: её можно обновить и переслать дальше
-  if (!VIEW) history.replaceState(null, '', location.pathname + location.search);
+  if (!VIEW) setUrl(location.pathname + location.search);
   try {
     const d = await decodeScheme(m[1]); if (!valid(d)) throw 0;
     if (VIEW) { S = d; viewingShared = true; sel = null; renderInspector(); render(); fitView(); refreshShare(); return; }
@@ -557,7 +639,7 @@ async function openShared() {
   } catch (e) { toast('Не удалось прочитать схему из ссылки: она обрезана или повреждена'); }
 }
 function snapshot() { undo.push(JSON.stringify(S)); if (undo.length > 100) undo.shift(); redo = []; }
-function restore(json) { S = JSON.parse(json); if (sel && !selObj()) sel = null; pending = null; save(); renderInspector(); render(); }
+function restore(json) { S = JSON.parse(json); multi.clear(); if (sel && !selObj()) sel = null; pending = null; save(); renderInspector(); render(); }
 function doUndo() { if (!undo.length) return; redo.push(JSON.stringify(S)); restore(undo.pop()); }
 function doRedo() { if (!redo.length) return; undo.push(JSON.stringify(S)); restore(redo.pop()); }
 function selObj() { if (!sel) return null; return sel.kind === 'comp' ? comp(sel.id) : S.wires.find(w => w.id === sel.id); }
@@ -567,20 +649,22 @@ function analyze() {
   const comps = S.comps, par = new Map();
   const find = k => { if (!par.has(k)) return k; let r = k; while (par.get(r) !== r) r = par.get(r); return r; };
   const uni = (a, b) => { a = find(a); b = find(b); if (a !== b) par.set(a, b); };
-  for (const c of comps) { for (const t of terms(c)) par.set(tk(c, t.k), tk(c, t.k)); if (c.type === 'nbus' || isWago(c)) par.set(tk(c, 'hub'), tk(c, 'hub')); }
+  for (const c of comps) { for (const t of terms(c)) par.set(tk(c, t.k), tk(c, t.k)); if (c.type === 'nbus' || c.type === 'dinbus' || isWago(c)) par.set(tk(c, 'hub'), tk(c, 'hub')); }
   for (const w of S.wires) if (par.has(w.a) && par.has(w.b)) uni(w.a, w.b);
 
   // Ветви внутри аппаратов: контакты автоматов, токовые цепи счётчика, шина
   const edges = [];
   const E = (c, a, b, pole, closed) => {
-    const e = {c, pole, closed, a: find(tk(c, a)), b: find(tk(c, b))};
+    const e = {c, pole, closed, a: find(tk(c, a)), b: find(tk(c, b)), ta: tk(c, a), tb: tk(c, b)};
     edges.push(e);
   };
   for (const c of comps) {
     if (c.type === 'br1' || c.type === 'fuse') E(c, 'in', 'out', 'L', c.on);
-    if (c.type === 'br2') { E(c, 'Lin', 'Lout', 'L', c.on); E(c, 'Nin', 'Nout', 'N', c.on); }
+    if (c.type === 'br2' || c.type === 'rcd') { E(c, 'Lin', 'Lout', 'L', c.on); E(c, 'Nin', 'Nout', 'N', c.on); }
+    if (c.type === 'bellbtn') E(c, 'in', 'out', 'L', pressed.has(c.id));
+    if (c.type === 'stab') { E(c, 'Lin', 'Lout', 'L', true); E(c, 'Nin', 'Nout', 'N', true); }
     if (c.type === 'meter') { E(c, '1', '2', 'L', true); E(c, '3', '4', 'N', true); }
-    if (c.type === 'nbus' || isWago(c)) terms(c).forEach(t => edges.push({c, pole: 'bus', closed: true, a: find(tk(c, t.k)), b: find(tk(c, 'hub'))}));
+    if (c.type === 'nbus' || c.type === 'dinbus' || isWago(c)) terms(c).forEach(t => edges.push({c, pole: 'bus', closed: true, a: find(tk(c, t.k)), b: find(tk(c, 'hub')), ta: tk(c, t.k), tb: tk(c, 'hub')}));
   }
   const adj = new Map();
   for (const e of edges) for (const n of [e.a, e.b]) { if (!adj.has(n)) adj.set(n, []); adj.get(n).push(e); }
@@ -614,7 +698,7 @@ function analyze() {
   const addI = (m, k, v) => m.set(k, (m.get(k) || 0) + v);
   let totalI = 0;
   for (const c of comps) {
-    if (c.type !== 'load') continue;
+    if (!isLoad(c)) continue;
     const lN = net(c, 'L'), nN = net(c, 'N'), I = (+c.kw || 0) * 1000 / U;
     let ph = null, ne = null, swapped = false;
     if (!fault) {
@@ -643,11 +727,18 @@ function analyze() {
 
   const compI = new Map(), wagoI = new Map();
   for (const c of comps) {
-    if (isBr(c)) compI.set(c.id, Math.max(poleI.get(c.id + 'L') || 0, poleI.get(c.id + 'N') || 0));
+    if (isBr(c) || c.type === 'rcd' || c.type === 'stab') compI.set(c.id, Math.max(poleI.get(c.id + 'L') || 0, poleI.get(c.id + 'N') || 0));
     if (isWago(c)) wagoI.set(c.id, Math.max(0, ...terms(c).map(t => netI.get(net(c, t.k)) || 0)));
   }
   const meterKw = new Map(meters.map(m => [m.id, (poleI.get(m.id + 'L') || 0) * U / 1000]));
-  return {find, L, N, L2, fault, netI, compI, meterKw, wagoI, loadSt, totalI, totalKw: totalI * U / 1000, prot, sup: sup[0]};
+  // Сколько шагов по клеммам от ввода — по этому видно, в какую сторону течёт ток в каждом проводе
+  const tadj = new Map(), link = (a, b) => { for (const [x, y] of [[a, b], [b, a]]) { if (!tadj.has(x)) tadj.set(x, []); tadj.get(x).push(y); } };
+  for (const w of S.wires) link(w.a, w.b);
+  for (const e of edges) if (e.closed) link(e.ta, e.tb);
+  const hops = starts => { const d = new Map(starts.map(k => [k, 0])), q = [...starts];
+    while (q.length) { const k = q.shift(); for (const o of tadj.get(k) || []) if (!d.has(o)) { d.set(o, d.get(k) + 1); q.push(o); } } return d; };
+  const distL = hops(sup.map(c => tk(c, 'L'))), distN = hops(sup.map(c => tk(c, 'N')));
+  return {find, L, N, L2, fault, netI, compI, meterKw, wagoI, loadSt, totalI, totalKw: totalI * U / 1000, prot, sup: sup[0], distL, distN};
 }
 
 /* ---------- отрисовка ---------- */
@@ -690,18 +781,67 @@ function compBody(c) {
       <text class="sup-s" x="12" y="${38 + dy}">от этажного щита</text>
       <text class="sup-s" x="12" y="${52 + dy}">разрешено ${fmt(c.allowKw)} кВт</text>
       <text class="sup-l" x="${sx(50)}" y="${f ? 18 : 70}">L</text><text class="sup-l" x="${sx(110)}" y="${f ? 18 : 70}">N</text>`; }
-    case 'br1': case 'br2': {
-      const cx = w / 2, lw = c.type === 'br2' ? 32 : 12;
+    case 'br1': case 'br2': case 'rcd': {
+      const cx = w / 2, lw = c.type === 'br1' ? 12 : 32, rcd = c.type === 'rcd';
       return `<rect class="mod" width="${w}" height="${h}" rx="3"/>
         <rect class="mod-term" x="2" y="2" width="${w - 4}" height="12" rx="2"/>
         <rect class="mod-term" x="2" y="${h - 14}" width="${w - 4}" height="12" rx="2"/>
-        <text class="m-name" x="${cx}" y="26">${esc(trunc(c.name, c.type === 'br2' ? 12 : 6))}</text>
-        <text class="m-rate" x="${cx}" y="39">${c.curve}${c.rating}</text>
+        <text class="m-name" x="${cx}" y="26">${esc(trunc(c.name, c.type === 'br1' ? 6 : 12))}</text>
+        <text class="m-rate" x="${cx}" y="39"${rcd ? ' style="font-size:9px"' : ''}>${rcd ? `${c.rating}А · ${c.leak}мА` : c.curve + c.rating}</text>${rcd ? `<rect class="rcd-test" x="${w - 19}" y="74" width="12" height="9" rx="2"><title>Кнопка «Тест»</title></rect><text class="rcd-t" x="${w - 13}" y="81">T</text>` : ''}
         <g class="lever ${c.on ? 'on' : 'off'}" data-act="toggle"><title>${c.on ? 'Включён — нажмите, чтобы выключить' : 'Выключен — нажмите, чтобы включить'}</title>
           <rect x="${cx - lw / 2 - 6}" y="43" width="${lw + 12}" height="32" fill="transparent"/>
           <rect class="lv-slot" x="${cx - lw / 2}" y="46" width="${lw}" height="26" rx="2"/>
           <rect class="lv-knob" x="${cx - lw / 2 + 2}" y="${c.on ? 48 : 59}" width="${lw - 4}" height="11" rx="1.5"/></g>
         <rect class="flag ${c.on ? 'on' : 'off'}" x="${cx - 6}" y="76" width="12" height="5" rx="1"><title>Флажок: красный — контакты замкнуты, зелёный — разомкнуты</title></rect>`;
+    }
+    case 'rail': {
+      const used = modulesOn(c).reduce((a, m) => a + mods(m), 0);
+      return `<text class="m-name l rail-label" x="0" y="-24">${esc(c.name)} · занято ${used} из ${c.n} мод.</text>
+        <rect class="rail-bg" width="${w}" height="${h}" rx="4"/>
+        <rect class="rail" x="2" y="36" width="${w - 4}" height="28" rx="2"/>
+        <rect class="rail-lip" x="2" y="40" width="${w - 4}" height="3"/><rect class="rail-lip" x="2" y="57" width="${w - 4}" height="3"/>
+        ${Array.from({length: c.n + 1}, (_, k) => `<line class="rail-tick" x1="${10 + k * MOD}" y1="30" x2="${10 + k * MOD}" y2="70"/>`).join('')}
+        <rect class="rail-stop" x="0" y="28" width="9" height="44" rx="2"/><rect class="rail-stop" x="${w - 9}" y="28" width="9" height="44" rx="2"/>`;
+    }
+    case 'stab': {
+      const on = stabOn(c);
+      return `<rect class="mod" width="${w}" height="${h}" rx="3"/>
+        <rect class="mod-term" x="2" y="2" width="${w - 4}" height="12" rx="2"/><rect class="mod-term" x="2" y="${h - 14}" width="${w - 4}" height="12" rx="2"/>
+        <text class="m-name" x="40" y="26">${esc(trunc(c.name, 12))}</text>
+        <rect class="stab-lcd" x="12" y="32" width="56" height="24" rx="3"/><text class="stab-v ${on ? '' : 'off'}" x="40" y="49.5">${on ? '230' : '---'}</text>
+        <text class="m-name" x="40" y="68">${on ? 'В · норма' : 'нет входа'}</text>
+        <text class="m-rate" x="40" y="81">до ${c.rating} А</text>`;
+    }
+    case 'dinsock': {
+      const st = A.loadSt.get(c.id) || {};
+      return `<rect class="mod" width="${w}" height="${h}" rx="3"/>
+        <rect class="mod-term" x="2" y="2" width="${w - 4}" height="12" rx="2"/>
+        <text class="m-name" x="40" y="25">${esc(trunc(c.name, 12))}</text>
+        <circle class="sock-face ${st.powered ? 'on' : ''}" cx="40" cy="56" r="23"/><circle class="sock-in" cx="40" cy="56" r="16"/>
+        <circle class="sock-pin" cx="33" cy="56" r="3"/><circle class="sock-pin" cx="47" cy="56" r="3"/>
+        <rect class="sock-pin" x="38" y="40" width="4" height="4" rx="1"/><rect class="sock-pin" x="38" y="68" width="4" height="4" rx="1"/>
+        <text class="din-n" x="40" y="93" text-anchor="middle">${fmt(c.kw)} кВт${st.powered ? ' · ' + fmt(st.I) + ' А' : ''}</text>`;
+    }
+    case 'dinbus': return `<text class="m-name l" x="0" y="-8">${esc(c.name)}</text>
+      <rect class="bus-base" width="${w}" height="${h}" rx="3"/>
+      ${dinbusLayout(c).bars.map(b => `<rect class="brass" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="2"/>`).join('')}`;
+    case 'bellbtn': {
+      const down = pressed.has(c.id);
+      return `<rect class="btn-plate" width="${w}" height="${h}" rx="8"/>
+        <text class="m-name" x="28" y="15">${esc(trunc(c.name, 6))}</text>
+        <g data-act="press"><title>Нажмите и держите — контакт замкнётся</title>
+          <circle class="btn-ring" cx="28" cy="38" r="16"/>
+          <circle class="btn-key ${down ? 'down' : ''}" cx="28" cy="38" r="${down ? 9.5 : 11}"/>
+          <path d="M23.5 38.5h9M28 34v9" stroke="var(--muted)" stroke-width="1.2" opacity="${down ? 0 : .6}"/></g>`;
+    }
+    case 'bell': {
+      const st = A.loadSt.get(c.id) || {};
+      return `<rect class="mod" width="${w}" height="${h}" rx="3"/>
+        <rect class="mod-term" x="2" y="2" width="${w - 4}" height="12" rx="2"/>
+        <text class="m-name" x="20" y="26">${esc(trunc(c.name, 5))}</text>
+        <path class="bell-ico ${st.powered ? 'on' : ''}" d="M20 38c-6 0-8.5 4.5-8.5 10v8l-3 4.5h23l-3-4.5v-8c0-5.5-2.5-10-8.5-10z"><title>${st.powered ? 'Звонит' : 'Нет питания'}</title></path>
+        <circle class="sock-pin" cx="20" cy="64" r="2.4"/>
+        <text class="din-n" x="20" y="88" text-anchor="middle">${st.powered ? 'дзынь' : 'звонок'}</text>`;
     }
     case 'fuse': {
       const cx = w / 2;
@@ -718,6 +858,17 @@ function compBody(c) {
     }
     case 'meter': {
       const kw = A.meterKw.get(c.id) || 0, dy = f ? 36 : 0, cy = f ? -76 : 0;
+      if (c.model === 'din') {
+        return `<rect class="mtr" width="${w}" height="${h}" rx="3"/>
+        <rect class="mod-term" x="2" y="2" width="${w - 4}" height="12" rx="2"/><rect class="mod-term" x="2" y="${h - 14}" width="${w - 4}" height="12" rx="2"/>
+        ${terms(c).map(t => `<text class="din-n" x="${t.x + 10}" y="${t.y < 50 ? 11 : h - 5}">${t.k} ${t.r}</text>`).join('')}
+        <text class="m-name l" x="10" y="27">${esc(trunc(c.name, 8))} · счётчик DIN</text>
+        <rect class="lcd" x="12" y="32" width="136" height="30" rx="3"/>
+        <text class="lcd-sm" x="18" y="51" style="text-anchor:start">${fmt(kw * 1000 / U, 1)} А</text>
+        <text class="lcd-big" x="142" y="52">${fmt(kw, 2)} кВт</text>
+        <circle class="led ${kw > 0 ? 'blink' : ''}" cx="18" cy="74" r="3"/>
+        <text class="mtr-s" x="26" y="77">1000 imp/kWh · 4 мод.</text>`;
+      }
       if (c.model === 'soviet') {
         const spin = kw > 0 ? clamp(6 / kw, 0.3, 60) : 0;  // 600 об/кВт·ч: период оборота диска 6/P секунд
         return `<rect class="sov" width="${w}" height="${h}" rx="8"/>
@@ -785,15 +936,164 @@ function offsetPoly(pts, o) {
 function wireState(w) {
   const n = A.find(w.a), I = A.netI.get(n) || 0;
   const fault = A.fault && A.L.has(n) && A.N.has(n), live = !A.fault && (A.L.has(n) || A.N.has(n));
-  return {cls: fault ? 'fault' : live ? 'live' : 'dead', flow: I > 0 && !fault};
+  return {cls: fault ? 'fault' : live ? 'live' : 'dead', flow: I > 0 && !fault, rev: flowRev(w)};
 }
-function cableSvg(ws, i) {
+// Путь провода нарисован от w.a к w.b. По фазе ток идёт от ввода, по нулю — обратно во ввод
+function flowRev(w) {
+  const n = A.find(w.a), phase = A.L.has(n), d = phase ? A.distL : A.N.has(n) ? A.distN : null;
+  if (!d) return false;
+  const da = d.get(w.a), db = d.get(w.b);
+  if (da === undefined || db === undefined || da === db) return false;
+  return phase ? da > db : da < db;
+}
+// Концы оболочки кабеля: середина между парой клемм, вынесенная на длину разделки
+function cableEnds(ws) {
   const [w1, w2] = ws, t = [w1.a, w1.b, w2.a, w2.b].map(getTerm);
-  if (t.some(x => !x)) return '';
-  const [a1, b1, a2, b2] = t, R = 26;
-  const end = (p, q) => ({x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 + p.s * R, s: p.s});
-  const A0 = end(a1, a2), B0 = end(b1, b2);
-  let spine = clean(route(A0, B0, (i % 3) * 4));
+  if (t.some(x => !x)) return null;
+  const [a1, b1, a2, b2] = t, R = 26, end = (p, q) => ({x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 + p.s * R, s: p.s});
+  return {a1, b1, a2, b2, A0: end(a1, a2), B0: end(b1, b2)};
+}
+
+/* ---------- трассировка: провода обходят корпуса и не ложатся друг на друга ----------
+   Поиск пути A* по неравномерной сетке: линии через 20 px плюс линии через клеммы и вдоль краёв корпусов.
+   Цена пути: длина, повороты, пересечения; идти по чужому проводу очень дорого, по проводу того же потенциала — бесплатно. */
+const STUB = 20, BEND = 14, CROSS = 400, OVERLAP = 600, PASSES = 3, PITCHES = [10, 20, 30];
+const pitch = () => PITCHES.includes(S.pitch) ? S.pitch : 20;  // шаг проводов хранится в схеме
+let routeCache = {key: '', map: null};
+function smartRoutes() {
+  const P = pitch(), GAP = Math.max(8, Math.round(P * 0.6));  // шаг сетки и наименьшее расстояние между соседними проводами
+  const key = JSON.stringify([P, S.comps.map(c => [c.id, c.type, c.x, c.y, c.flip, c.swap, c.n, c.mw, c.model]), S.wires.map(w => [w.id, w.a, w.b, w.cable])]);
+  if (routeCache.key === key) return routeCache.map;
+  const map = new Map(); routeCache = {key, map};
+  const bodies = S.comps.filter(c => c.type !== 'rail').map(c => ({id: c.id, x0: c.x - 6, y0: c.y - 6, x1: c.x + cw(c) + 6, y1: c.y + chh(c) + 6}));
+  const jobs = [], byCable = new Map();
+  for (const w of S.wires) if (w.cable) { if (!byCable.has(w.cable)) byCable.set(w.cable, []); byCable.get(w.cable).push(w); }
+  for (const w of S.wires) {
+    const cab = w.cable && byCable.get(w.cable);
+    if (cab && cab.length === 2) { if (cab[0] === w) { const e = cableEnds(cab); if (e) jobs.push({id: w.cable, a: e.A0, b: e.B0, net: 'k' + w.cable}); } continue; }
+    const a = getTerm(w.a), b = getTerm(w.b); if (a && b) jobs.push({id: w.id, a, b, ka: w.a, kb: w.b, net: A.find(w.a)});
+  }
+  if (!jobs.length) return map;
+  // из одной клеммы несколько проводов: каждый следующий отходит глубже на шаг, ближний — короче всех,
+  // чтобы у каждого была своя линия, а не общая полоса
+  const ends = new Map();
+  for (const j of jobs) for (const [k, p, q] of [[j.ka, j.a, j.b], [j.kb, j.b, j.a]]) if (k && p.s) { if (!ends.has(k)) ends.set(k, []); ends.get(k).push({p, far: Math.abs(q.x - p.x) + Math.abs(q.y - p.y)}); }
+  for (const list of ends.values()) list.sort((u, v) => u.far - v.far).forEach((e, k) => { e.p.len = STUB + k * P; });
+  const stubOf = p => p.s ? {x: p.x, y: p.y + p.s * (p.len || STUB)} : {x: p.x, y: p.y};
+  // сетка: линии через 20 px, вдоль краёв корпусов и через клеммы; слишком близкие линии сливаются
+  const pts = jobs.flatMap(j => [stubOf(j.a), stubOf(j.b)]);
+  const minX = Math.min(...bodies.map(b => b.x0), ...pts.map(p => p.x)) - 80, maxX = Math.max(...bodies.map(b => b.x1), ...pts.map(p => p.x)) + 80;
+  const minY = Math.min(...bodies.map(b => b.y0), ...pts.map(p => p.y)) - 80, maxY = Math.max(...bodies.map(b => b.y1), ...pts.map(p => p.y)) + 80;
+  const XS = new Set(), YS = new Set();
+  for (let x = Math.floor(minX / P) * P; x <= maxX; x += P) XS.add(x);
+  for (let y = Math.floor(minY / P) * P; y <= maxY; y += P) YS.add(y);
+  for (const b of bodies) { XS.add(b.x0 - 4); XS.add(b.x1 + 4); YS.add(b.y0 - 4); YS.add(b.y1 + 4); }
+  const keepX = new Set(pts.map(p => p.x)), keepY = new Set(pts.map(p => p.y));
+  // середины между соседними клеммами: чтобы между ними всегда была линия для прохода
+  for (const [keep, set] of [[keepX, XS], [keepY, YS]]) { const k = [...keep].sort((a, b) => a - b); for (let i = 1; i < k.length; i++) if (k[i] - k[i - 1] >= 2 * GAP) set.add((k[i] + k[i - 1]) / 2); }
+  const thin = (set, keep) => { const all = [...new Set([...set, ...keep])].sort((a, b) => a - b), out = [];
+    for (const v of all) { const last = out[out.length - 1];
+      if (last === undefined || v - last >= GAP || keep.has(v)) { if (last !== undefined && v - last < GAP && !keep.has(last)) out[out.length - 1] = v; else out.push(v); } }
+    return out; };
+  const xs = thin(XS, keepX), ys = thin(YS, keepY), nx = xs.length, ny = ys.length;
+  const xi = new Map(xs.map((v, i) => [v, i])), yi = new Map(ys.map((v, i) => [v, i]));
+  const owner = new Array(nx * ny).fill(null);
+  for (const b of bodies) for (let i = 0; i < nx; i++) { const x = xs[i]; if (x <= b.x0 || x >= b.x1) continue;
+    for (let j = 0; j < ny; j++) { const y = ys[j]; if (y > b.y0 && y < b.y1 && !owner[i * ny + j]) owner[i * ny + j] = b.id; } }
+  // Отвод от клеммы до точки выхода и сами точки выхода — не для прохода: провод только начинает или заканчивает в своей точке
+  const reserved = new Set();
+  for (const job of jobs) for (const p of [job.a, job.b]) {
+    const sp = stubOf(p); reserved.add(xi.get(sp.x) * ny + yi.get(sp.y));
+    if (p.s) { const i = xi.get(p.x); for (let j = 0; j < ny; j++) { const y = ys[j]; if ((y - p.y) * p.s > 0 && (sp.y - y) * p.s > 0) reserved.add(i * ny + j); } }
+  }
+  // занятость: сколько проводов каждой сети прошло по отрезку и через узел вдоль/поперёк
+  const edgeUse = new Map(), nodeH = new Map(), nodeV = new Map();
+  const ek = (u, v) => u < v ? u * 1e6 + v : v * 1e6 + u;
+  const bump = (m, k, net, d) => { let x = m.get(k); if (!x) m.set(k, x = new Map()); const c = (x.get(net) || 0) + d; if (c) x.set(net, c); else x.delete(net); };
+  const jobNet = new Map(jobs.map(j => [j.id, j.net]));
+  // 0 — свободно, SAME — там другой провод того же потенциала, 1 — чужой потенциал
+  const SAME = 0.35;
+  const foreign = (m, k, job) => { const x = m.get(k); if (!x) return 0; let r = 0; for (const [id, c] of x) if (id !== job.id && c > 0) { if (jobNet.get(id) !== job.net) return 1; r = SAME; } return r; };
+  const mark = (nodes, net, d) => {
+    for (let k = 0; k < nodes.length; k++) {
+      const n = nodes[k]; if (k) bump(edgeUse, ek(nodes[k - 1], n), net, d);
+      for (const o of [nodes[k - 1], nodes[k + 1]]) if (o !== undefined) bump(Math.floor(o / ny) === Math.floor(n / ny) ? nodeV : nodeH, n, net, d);
+    }
+  };
+  const DX = [1, -1, 0, 0], DY = [0, 0, 1, -1];
+  const solve = (job, loose) => {
+    const sa = stubOf(job.a), sb = stubOf(job.b), start = xi.get(sa.x) * ny + yi.get(sa.y), goal = xi.get(sb.x) * ny + yi.get(sb.y);
+    const own = new Set([job.a, job.b].filter(p => !p.s && p.c).map(p => p.c.id));
+    const d0 = job.a.s > 0 ? 2 : job.a.s < 0 ? 3 : -1, dEnd = job.b.s > 0 ? 3 : job.b.s < 0 ? 2 : -1;
+    const gx = xs[Math.floor(goal / ny)], gy = ys[goal % ny], g = new Float64Array(nx * ny * 4).fill(Infinity), prev = new Int32Array(nx * ny * 4).fill(-1);
+    const heap = [], push = (f, st) => { heap.push([f, st]); let k = heap.length - 1; while (k) { const pk = (k - 1) >> 1; if (heap[pk][0] <= heap[k][0]) break; [heap[pk], heap[k]] = [heap[k], heap[pk]]; k = pk; } };
+    const pop = () => { const top = heap[0], last = heap.pop(); if (heap.length) { heap[0] = last; let k = 0; for (;;) { const l = 2 * k + 1, r = l + 1; let m = k;
+      if (l < heap.length && heap[l][0] < heap[m][0]) m = l; if (r < heap.length && heap[r][0] < heap[m][0]) m = r; if (m === k) break; [heap[m], heap[k]] = [heap[k], heap[m]]; k = m; } } return top; };
+    const h = n => Math.abs(xs[Math.floor(n / ny)] - gx) + Math.abs(ys[n % ny] - gy);
+    for (let d = 0; d < 4; d++) if (d0 < 0 || d === d0) { g[start * 4 + d] = 0; push(h(start), start * 4 + d); }
+    let found = -1;
+    while (heap.length) {
+      const [f, st] = pop(), n = st >> 2, d = st & 3, gc = g[st];
+      if (f - h(n) > gc + 1e-6) continue;
+      if (n === goal) { found = st; break; }
+      const i = Math.floor(n / ny), j = n % ny;
+      for (let nd = 0; nd < 4; nd++) {
+        if (nd === (d ^ 1)) continue;
+        const ii = i + DX[nd], jj = j + DY[nd]; if (ii < 0 || jj < 0 || ii >= nx || jj >= ny) continue;
+        const m = ii * ny + jj, ow = owner[m]; if (ow && !own.has(ow)) continue;
+        if (m !== goal && !loose && reserved.has(m)) continue;
+        const len = Math.abs(xs[ii] - xs[i]) + Math.abs(ys[jj] - ys[j]);
+        let c = gc + len + (nd !== d ? BEND : 0);
+        const fe = foreign(edgeUse, ek(n, m), job);
+        c += OVERLAP * fe;
+        if (m !== goal) c += CROSS * foreign(nd < 2 ? nodeV : nodeH, m, job);  // поперёк другого провода
+        if (m !== goal && !fe) c += OVERLAP / 2 * foreign(nd < 2 ? nodeH : nodeV, m, job);  // другой провод сворачивает в этом узле
+        if (m === goal && dEnd >= 0 && nd !== dEnd) c += BEND;
+        if (c < g[m * 4 + nd]) { g[m * 4 + nd] = c; prev[m * 4 + nd] = st; push(c + h(m), m * 4 + nd); }
+      }
+    }
+    if (found < 0) return null;
+    const nodes = []; for (let st = found; st >= 0; st = prev[st]) nodes.push(st >> 2);
+    return {nodes: nodes.reverse(), cost: g[found]};
+  };
+  // Одна попытка: укладка в заданном порядке, затем каждый провод перекладывается с учётом остальных
+  const attempt = order => {
+    edgeUse.clear(); nodeH.clear(); nodeV.clear();
+    const paths = new Map();
+    for (const job of order) { const r = solve(job) || solve(job, true); if (r) { paths.set(job.id, r); mark(r.nodes, job.id, 1); } }
+    for (let pass = 0; pass < PASSES; pass++) {
+      let changed = false;
+      for (const job of order) {
+        const old = paths.get(job.id); if (!old) continue;
+        mark(old.nodes, job.id, -1);
+        const r = solve(job) || solve(job, true) || old;  // лучший путь при нынешней раскладке остальных
+        if (r.nodes.join() !== old.nodes.join()) changed = true;
+        paths.set(job.id, r); mark(r.nodes, job.id, 1);
+      }
+      if (!changed) break;
+    }
+    let crossings = 0, cost = 0;
+    for (const [n, hs] of nodeH) { const vs = nodeV.get(n); if (!vs) continue; outer: for (const a of hs.keys()) for (const b of vs.keys()) if (a !== b) { crossings += jobNet.get(a) !== jobNet.get(b) ? 1 : SAME; break outer; } }
+    for (const r of paths.values()) cost += r.cost;
+    return {paths, score: crossings * 1e6 + (jobs.length - paths.size) * 1e7 + cost};
+  };
+  // несколько порядков укладки — берётся тот, где меньше пересечений
+  const span = j => Math.abs(j.a.x - j.b.x) + Math.abs(j.a.y - j.b.y);
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const orders = [[...jobs].sort((p, q) => span(p) - span(q)), [...jobs].sort((p, q) => span(q) - span(p))];
+  for (let k = 0; k < 2; k++) orders.push([...jobs].sort(() => rnd() - .5));
+  let best = null;
+  for (const o of orders) { const r = attempt(o); if (!best || r.score < best.score) best = r; if (best.score < 1e6) break; }
+  const paths = best.paths;
+  for (const job of jobs) { const r = paths.get(job.id); if (r) map.set(job.id, clean([{x: job.a.x, y: job.a.y}, ...r.nodes.map(n => ({x: xs[Math.floor(n / ny)], y: ys[n % ny]})), {x: job.b.x, y: job.b.y}])); }
+  return map;
+}
+
+function cableSvg(ws, i, R) {
+  const [w1, w2] = ws, ce = cableEnds(ws);
+  if (!ce) return '';
+  const {a1, b1, a2, b2, A0, B0} = ce;
+  let spine = R?.get(w1.cable) || clean(route(A0, B0, (i % 3) * 4));
   if (spine.length < 2) spine = [A0, {x: B0.x + 0.01, y: B0.y}];
   const n0 = {x: -Math.sign(spine[1].y - spine[0].y), y: Math.sign(spine[1].x - spine[0].x)};
   const sg = Math.sign((a1.x - A0.x) * n0.x + (a1.y - A0.y) * n0.y) || 1;
@@ -801,12 +1101,13 @@ function cableSvg(ws, i) {
   let h = `<g class="wire cable ${dimOn && !s ? 'dim' : ''}" data-wire="${w1.id}"><path class="hit" d="${sd}" style="stroke-width:20px"/>${s ? `<path class="halo" d="${sd}" style="stroke-width:24px"/>` : ''}<path class="sheath-edge" d="${sd}"/><path class="sheath" d="${sd}"/>`;
   for (const [w, ta, tb, o] of [[w1, a1, b1, sg * 3.2], [w2, a2, b2, -sg * 3.2]]) {
     const st = wireState(w), d = pathD([ta, {x: ta.x, y: ta.y + ta.s * 8}, ...offsetPoly(spine, o), {x: tb.x, y: tb.y + tb.s * 8}, tb]);
-    h += `<g class="wire ${w.kind} ${st.cls}"><path class="hit" d="${d}"/><path class="core" d="${d}" style="stroke-width:2.6px"/>${st.flow ? `<path class="flow" d="${d}" style="stroke-width:1.3px"/>` : ''}</g>`;
+    h += `<g class="wire ${w.kind} ${st.cls}"><path class="hit" d="${d}"/><path class="core" d="${d}" style="stroke-width:2.6px"/>${st.flow ? `<path class="flow ${st.rev ? 'rev' : ''}" d="${d}" style="stroke-width:1.3px"/>` : ''}</g>`;
   }
   return h + '</g>';
 }
 
-const sessionKwh = new Map();
+const sessionKwh = new Map(), pressed = new Set();  // pressed — кнопки, которые сейчас держат: в схему не сохраняется
+const stabOn = c => A.L.has(A.find(tk(c, 'Lin'))) && A.N.has(A.find(tk(c, 'Nin'))) || A.L.has(A.find(tk(c, 'Nin'))) && A.N.has(A.find(tk(c, 'Lin')));
 function drumSvg(c) {
   const v = Math.max(0, (+c.kwh || 4217.3) + (sessionKwh.get(c.id) || 0));
   const d = (Math.floor(v * 10) % 1000000).toString().padStart(6, '0');
@@ -825,6 +1126,7 @@ setInterval(() => {
 function render() {
   A = analyze();
   const connected = new Set(S.wires.flatMap(w => [w.a, w.b]));
+  const R = drag?.mode === 'move' && drag.moved ? null : smartRoutes();
   const cables = new Map(), pendMate = mode2 && pending ? partner(pending) : null;
   for (const w of S.wires) if (w.cable) { if (!cables.has(w.cable)) cables.set(w.cable, []); cables.get(w.cable).push(w); }
   let out = '<defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle class="dot" cx="10" cy="10" r="1.1"/></pattern></defs>';
@@ -835,34 +1137,35 @@ function render() {
   if (so && sel.kind === 'wire') cableOf(so).forEach(w => { focusW.add(w.id); ends(w); });
   if (so && sel.kind === 'comp') { focusC.add(so.id); for (const w of S.wires) if (w.a.startsWith(so.id + ':') || w.b.startsWith(so.id + ':')) { focusW.add(w.id); ends(w); } }
   const dimC = c => dimOn && !focusC.has(c.id) ? 'dim' : '';
-  for (const c of S.comps) {
-    const s = sel && sel.kind === 'comp' && sel.id === c.id;
+  for (const c of [...S.comps].sort((a, b) => (b.type === 'rail') - (a.type === 'rail'))) {
+    const s = (sel && sel.kind === 'comp' && sel.id === c.id) || multi.has(c.id);
     out += `<g class="comp ${dimC(c)}" data-comp="${c.id}" transform="translate(${c.x},${c.y})">${s ? `<rect class="sel-ring" x="-5" y="-5" width="${cw(c) + 10}" height="${chh(c) + 10}" rx="7"/>` : ''}${compBody(c)}</g>`;
   }
   S.wires.forEach((w, i) => {
     const cab = w.cable && cables.get(w.cable);
-    if (cab && cab.length === 2) { if (cab[0] === w) out += cableSvg(cab, i); return; }
+    if (cab && cab.length === 2) { if (cab[0] === w) out += cableSvg(cab, i, R); return; }
     const a = getTerm(w.a), b = getTerm(w.b);
     if (!a || !b) return;
-    const d = pathD(route(a, b, (w.kind === 'N' ? 6 : 0) + (i % 3) * 4));
+    const d = pathD(R?.get(w.id) || route(a, b, (w.kind === 'N' ? 6 : 0) + (i % 3) * 4));
     const n = A.find(w.a), sw = 3.2;
     const fault = A.fault && A.L.has(n) && A.N.has(n);
     const live = !A.fault && (A.L.has(n) || A.N.has(n));
     const I = A.netI.get(n) || 0, s = focusW.has(w.id);
     out += `<g class="wire ${w.kind} ${fault ? 'fault' : live ? 'live' : 'dead'} ${dimOn && !s ? 'dim' : ''}" data-wire="${w.id}">
       <path class="hit" d="${d}"/>${s ? `<path class="halo" d="${d}" style="stroke-width:${sw + 9}px"/>` : ''}
-      <path class="core" d="${d}" style="stroke-width:${sw}px"/>${I > 0 && !fault ? `<path class="flow" d="${d}" style="stroke-width:${Math.max(1.4, sw - 2.4)}px"/>` : ''}</g>`;
+      <path class="core" d="${d}" style="stroke-width:${sw}px"/>${I > 0 && !fault ? `<path class="flow ${flowRev(w) ? 'rev' : ''}" d="${d}" style="stroke-width:${Math.max(1.4, sw - 2.4)}px"/>` : ''}</g>`;
   });
   for (const c of S.comps) for (const t of terms(c)) {
     const key = tk(c, t.k), x = c.x + t.x, y = c.y + t.y;
     out += `<g class="term ${t.r} ${c.type === 'node' ? 'node' : ''} ${dimC(c)} ${pending === key || pendMate === key ? 'pending' : ''}" data-term="${key}" transform="translate(${x},${y})"><title>${esc(c.name)}: ${t.tip}</title>
       <circle class="t-hit" r="${c.type === 'node' ? (coarse ? 9 : 7) : (coarse ? 16 : 11)}"/><circle class="t-ring" r="5.5"/>${connected.has(key) ? '<path class="t-slot" d="M-2.8 -2.8L2.8 2.8"/>' : '<path class="t-slot" d="M-3 0H3"/>'}</g>`;
   }
+  out += '<rect id="boxsel" class="boxsel" width="0" height="0" visibility="hidden"/>';
   out += '<path id="rubber" class="rubber" d=""/>';
   svg.innerHTML = out;
   applyView();
   if (pending && rubberAt) updateRubber(rubberAt);
-  renderStats(); updateReadout(); updateHint();
+  renderStats(); updateReadout(); updateHint(); syncPitch();
   $('#b-undo').disabled = !undo.length; $('#b-redo').disabled = !redo.length;
 }
 
@@ -885,6 +1188,7 @@ function updateHint() {
   const h = $('#hint');
   h.classList.toggle('active', !!pending);
   if (VIEW) { h.textContent = coarse ? 'Только просмотр. Коснитесь элемента — подсветятся его провода, пустого места — снять выделение.' : 'Только просмотр. Нажмите на элемент — подсветятся его провода. Поле двигается мышью, Ctrl + колесо — масштаб.'; return; }
+  if (boxMode && !pending) { h.textContent = 'Режим рамки: тяните по пустому месту, чтобы выделить несколько элементов.'; return; }
   h.textContent = pending
     ? (mode2 ? 'Выберите клемму L или N на другом элементе, вторая жила встанет сама. Esc — отмена.' : 'Выберите вторую клемму. Esc — отмена.')
     : (mode2 ? 'Двухжильный провод: от клеммы L или N, вторая жила подключится к соседней.' : coarse ? 'Коснитесь клеммы, потом второй — будет провод. Двумя пальцами — масштаб.' : 'Тяните провод от клеммы к клемме. Пустое место — двигать поле, Ctrl + колесо — масштаб.');
@@ -909,14 +1213,18 @@ function updateReadout() {
   }
   const c = o;
   if (isBr(c)) { const I = A.compI.get(c.id) || 0; box.innerHTML = ro('Состояние', c.on ? 'включён' : 'выключен') + ro('Ток', `${fmt(I)} из ${c.rating} А`) + bar(I, c.rating); }
-  else if (c.type === 'load') { const st = A.loadSt.get(c.id); if (!st) return; box.innerHTML = ro('Питание', st.powered ? 'есть' : 'нет') + (st.powered ? ro('Ток', fmt(st.I) + ' А') + ro('Защита', st.br ? `${st.br.name} ${rateLabel(st.br)}` : '—') : `<div class="ro"><span>${esc(st.reason)}</span></div>`); }
+  else if (c.type === 'bellbtn') box.innerHTML = ro('Контакт', pressed.has(c.id) ? 'замкнут' : 'разомкнут') + ro('Как пользоваться', 'нажмите и держите кнопку');
+  else if (c.type === 'rcd') { const I = A.compI.get(c.id) || 0; box.innerHTML = ro('Состояние', c.on ? 'включено' : 'выключено') + ro('Ток', `${fmt(I)} из ${c.rating} А`) + bar(I, c.rating) + ro('Утечка', `срабатывает от ${c.leak} мА`); }
+  else if (c.type === 'stab') { const I = A.compI.get(c.id) || 0; box.innerHTML = ro('Вход', stabOn(c) ? 'есть, на выходе 230 В' : 'нет') + ro('Ток', `${fmt(I)} из ${c.rating} А`) + bar(I, c.rating); }
+  else if (c.type === 'rail') { const used = modulesOn(c).reduce((a, m) => a + mods(m), 0); box.innerHTML = ro('Занято', `${used} из ${c.n} мод.`) + bar(used, c.n) + ro('Длина', `${c.n * 18} мм`); }
+  else if (isLoad(c)) { const st = A.loadSt.get(c.id); if (!st) return; box.innerHTML = ro('Питание', st.powered ? 'есть' : 'нет') + (st.powered ? ro('Ток', fmt(st.I) + ' А') + ro('Защита', st.br ? `${st.br.name} ${rateLabel(st.br)}` : '—') : `<div class="ro"><span>${esc(st.reason)}</span></div>`); }
   else if (c.type === 'meter') { const kw = A.meterKw.get(c.id) || 0; box.innerHTML = ro('Мощность', fmt(kw, 2) + ' кВт') + ro('Ток', fmt(kw * 1000 / U) + ' А'); }
   else if (c.type === 'supply') box.innerHTML = ro('Нагрузка', `${fmt(A.totalKw)} из ${fmt(c.allowKw)} кВт`) + bar(A.totalKw, c.allowKw) + ro('Ток', `${fmt(A.totalI)} из ${fmt(c.allowKw * 1000 / U)} А`);
   else if (c.type === 'node') {
     const k = tk(c, 'p'), n = S.wires.filter(w => w.a === k || w.b === k).length;
     box.innerHTML = ro('Проводов', String(n)) + ro('Ток', `≈ ${fmt(A.netI.get(A.find(k)) || 0)} А`);
   }
-  else if (c.type === 'nbus' || isWago(c)) {
+  else if (c.type === 'nbus' || c.type === 'dinbus' || isWago(c)) {
     const used = terms(c).filter(t => S.wires.some(w => w.a === tk(c, t.k) || w.b === tk(c, t.k))).length, I = A.wagoI.get(c.id) || 0;
     box.innerHTML = (isWago(c) ? ro('Ток', `${fmt(I)} из ${WAGO_I} А`) + bar(I, WAGO_I) : '') + ro('Занято гнёзд', `${used} из ${terms(c).length}`);
   }
@@ -925,6 +1233,15 @@ function updateReadout() {
 function renderInspector() {
   const box = $('#inspector'), o = VIEW ? null : selObj();  // в просмотре панели нет: выделение только подсвечивает провода
   let h;
+  if (!VIEW && multi.size > 1) {
+    box.hidden = false; box.classList.remove('min'); box.parentElement.classList.add('has-sheet');
+    box.innerHTML = `<div class="sh-head"><h3>Выделено элементов: ${multi.size}</h3><button class="btn icon" id="f-close" aria-label="Снять выделение">×</button></div>
+      <p class="lead">Тяните любой из них, чтобы сдвинуть все вместе. Shift + щелчок добавляет или убирает элемент.</p>
+      <button class="btn danger" id="f-del">Удалить выделенные</button>`;
+    $('#f-close').addEventListener('click', () => selectMany([]));
+    $('#f-del').addEventListener('click', delSel);
+    return;
+  }
   box.hidden = !o; box.classList.toggle('min', sheetMin); box.parentElement.classList.toggle('has-sheet', !!o);
   if (!o) { box.innerHTML = ''; return; }
   if (sel.kind === 'wire' && o.cable) {
@@ -947,7 +1264,7 @@ function renderInspector() {
     const c = o;
     h = `<div class="sh-head"><h3>${TITLE[c.type]}</h3><button class="btn icon" id="f-min" aria-label="${sheetMin ? 'Развернуть' : 'Свернуть'}">${sheetMin ? '▴' : '▾'}</button><button class="btn icon" id="f-close" aria-label="Снять выбор">×</button></div>
       <label class="fld"><span>Обозначение</span><input id="f-name" value="${esc(c.name)}" maxlength="24" autocomplete="off"></label>`;
-    if (c.type !== 'node' && c.type !== 'wago22') {
+    if (c.type !== 'node' && c.type !== 'wago22' && c.type !== 'rail') {
       const top = terms(c)[0].s < 0;
       h += `<div class="fld"><span>${isBr(c) ? 'Вход' : 'Клеммы'} <kbd>F</kbd></span><div class="seg" role="group" aria-label="Сторона клемм">
         <button id="f-top" class="${top ? 'on' : ''}" aria-pressed="${top}">Сверху</button>
@@ -959,7 +1276,15 @@ function renderInspector() {
     if (c.type === 'supply') h += `<label class="fld"><span>Разрешённая мощность, кВт</span><input id="f-allow" type="number" min="1" max="50" step="0.5" value="${c.allowKw}"></label>`;
     if (c.type === 'fuse') h += `<label class="fld"><span>Номинал, А</span><select id="f-rating">${FUSE_RATINGS.map(r => `<option value="${r}" ${r === c.rating ? 'selected' : ''}>ПАР-${r} · ${r} А</option>`).join('')}</select></label>
       <button class="btn ${c.on ? '' : 'primary'}" id="f-on">${c.on ? 'Выбить' : 'Включить'}</button>`;
-    if (c.type === 'meter') h += `<label class="fld"><span>Вид</span><select id="f-model"><option value="">Электронный</option><option value="soviet" ${c.model === 'soviet' ? 'selected' : ''}>Советский СО-И446</option></select></label>`;
+    if (c.type === 'meter') h += `<label class="fld"><span>Вид</span><select id="f-model"><option value="">Электронный</option><option value="soviet" ${c.model === 'soviet' ? 'selected' : ''}>Советский СО-И446</option><option value="din" ${c.model === 'din' ? 'selected' : ''}>На DIN-рейку, 4 модуля</option></select></label>`;
+    if (c.type === 'rcd') h += `<div class="row2"><label class="fld"><span>Номинал, А</span><select id="f-rating">${RCD_RATINGS.map(r => `<option value="${r}" ${r === c.rating ? 'selected' : ''}>${r} А</option>`).join('')}</select></label>
+      <label class="fld"><span>Ток утечки</span><select id="f-leak">${RCD_LEAKS.map(r => `<option value="${r}" ${r === c.leak ? 'selected' : ''}>${r} мА</option>`).join('')}</select></label></div>
+      <button class="btn ${c.on ? '' : 'primary'}" id="f-on">${c.on ? 'Выключить' : 'Включить'}</button>`;
+    if (c.type === 'stab') h += `<label class="fld"><span>Ток нагрузки</span><select id="f-rating">${STAB_RATINGS.map(r => `<option value="${r}" ${r === c.rating ? 'selected' : ''}>до ${r} А</option>`).join('')}</select></label>`;
+    if (c.type === 'dinbus') h += `<div class="row2"><label class="fld"><span>Ширина, модулей</span><input id="f-dbw" type="number" min="1" max="12" step="1" value="${c.mw}"></label>
+        <label class="fld"><span>Гнёзд</span><input id="f-dbn" type="number" min="2" max="96" step="1" value="${c.n}"></label></div>`;
+    if (c.type === 'rail') h += `<label class="fld"><span>Длина, модулей (1 мод. = 18 мм)</span><input id="f-rail" type="number" min="1" max="72" step="1" value="${c.n}"></label>`;
+    if (c.type === 'dinsock' || c.type === 'bell') h += `<label class="fld"><span>Мощность, кВт</span><input id="f-kw" type="number" min="0" max="5" step="0.01" value="${c.kw}"></label>`;
     if (c.type === 'wago22') {
       const opts = sel => Object.entries(WAGO_COLORS).map(([k, [v]]) => `<option value="${k}" ${k === sel ? 'selected' : ''}>${v}</option>`).join('');
       const c1 = c.color2 && c.color !== 'mix' ? c.color : 'orange', c2 = c.color2 || 'blue', cols = c.split === 'cols';
@@ -990,6 +1315,12 @@ function renderInspector() {
   on('f-kw', 'input', e => typed(() => { const v = parseFloat(e.target.value); if (v >= 0) o.kw = v; }));
   on('f-rating', 'change', e => once(() => o.rating = +e.target.value));
   on('f-curve', 'change', e => once(() => o.curve = e.target.value));
+  const dropLost = () => { const keep = new Set(terms(o).map(t => tk(o, t.k)));  // провода к исчезнувшим гнёздам
+    S.wires = S.wires.filter(w => !((w.a.startsWith(o.id + ':') && !keep.has(w.a)) || (w.b.startsWith(o.id + ':') && !keep.has(w.b)))); };
+  on('f-dbw', 'input', e => { const v = Math.round(+e.target.value); if (v >= 1 && v <= 12) typed(() => { o.mw = v; dropLost(); }); });
+  on('f-dbn', 'input', e => { const v = Math.round(+e.target.value); if (v >= 2 && v <= 96) typed(() => { o.n = v; dropLost(); }); });
+  on('f-rail', 'input', e => { const v = Math.round(+e.target.value); if (v >= 1 && v <= 72) typed(() => o.n = v); });
+  on('f-leak', 'change', e => once(() => o.leak = +e.target.value));
   on('f-model', 'change', e => once(() => { if (e.target.value) o.model = e.target.value; else delete o.model; }));
   on('f-color', 'change', e => once(() => o.color = e.target.value));
   const two = () => { o.color = document.getElementById('f-c1').value; o.color2 = document.getElementById('f-c2').value; };
@@ -1002,11 +1333,7 @@ function renderInspector() {
   on('f-bottom', 'click', () => { if (terms(o)[0].s < 0) flip(o.id); });
   on('f-ln', 'click', () => { if (o.swap) swapLN(o.id); });
   on('f-nl', 'click', () => { if (!o.swap) swapLN(o.id); });
-  on('f-n', 'change', e => once(() => {
-    o.n = +e.target.value;
-    const keep = new Set(terms(o).map(t => tk(o, t.k)));
-    S.wires = S.wires.filter(w => !((w.a.startsWith(o.id + ':') && !keep.has(w.a)) || (w.b.startsWith(o.id + ':') && !keep.has(w.b))));
-  }));
+  on('f-n', 'change', e => once(() => { o.n = +e.target.value; dropLost(); }));
   on('f-kind', 'change', e => { once(() => { if (Object.values(KINDS).includes(o.name)) o.name = KINDS[e.target.value]; o.kind = e.target.value; }); renderInspector(); });
   on('f-mm', 'change', e => { once(() => cableOf(o).forEach(w => w.mm = +e.target.value)); if (o.cable) renderInspector(); });
   on('f-split', 'click', () => { once(() => cableOf(o).forEach(w => delete w.cable)); renderInspector(); });
@@ -1020,7 +1347,12 @@ function renderInspector() {
 $('#inspector').addEventListener('focusin', () => { editing = false; });
 
 /* ---------- действия ---------- */
-function select(s) { sel = s; renderInspector(); render(); }
+function select(s) { sel = s; multi.clear(); renderInspector(); render(); }
+function selectMany(ids) {
+  multi = new Set(ids.filter(id => comp(id)));
+  if (multi.size === 1) { select({kind: 'comp', id: [...multi][0]}); return; }
+  sel = null; renderInspector(); render();
+}
 function toggle(id) {
   const c = comp(id); if (!c || VIEW) return;
   snapshot(); c.on = !c.on; save();
@@ -1028,7 +1360,7 @@ function toggle(id) {
   toast(`${c.name} ${c.on ? 'включён' : 'выключен'}`);
 }
 function flip(id) {
-  const c = comp(id); if (!c || c.type === 'node' || c.type === 'wago22') return;
+  const c = comp(id); if (!c || c.type === 'node' || c.type === 'wago22' || c.type === 'rail') return;
   snapshot(); c.flip = !c.flip; save(); renderInspector(); render();
 }
 function swapLN(id) {
@@ -1036,6 +1368,12 @@ function swapLN(id) {
   snapshot(); c.swap = !c.swap; save(); renderInspector(); render();
 }
 function delSel() {
+  if (multi.size) {
+    snapshot();
+    const gone = id => multi.has(id);
+    S.comps = S.comps.filter(c => !gone(c.id)); S.wires = S.wires.filter(w => !gone(w.a.split(':')[0]) && !gone(w.b.split(':')[0]));
+    toast(`Удалено элементов: ${multi.size}`); multi.clear(); save(); renderInspector(); render(); return;
+  }
   if (!sel) return;
   snapshot();
   if (sel.kind === 'comp') { S.comps = S.comps.filter(c => c.id !== sel.id); S.wires = S.wires.filter(w => !w.a.startsWith(sel.id + ':') && !w.b.startsWith(sel.id + ':')); }
@@ -1045,7 +1383,7 @@ function delSel() {
 function connect(a, b) {
   if (S.wires.some(w => (w.a === a && w.b === b) || (w.a === b && w.b === a))) { toast('Эти клеммы уже соединены'); return; }
   const ta = getTerm(a), tb = getTerm(b); if (!ta || !tb) return;
-  const ld = [ta.c, tb.c].find(c => c.type === 'load'), wg = [ta.c, tb.c].some(c => isWago(c) || c.type === 'node');
+  const ld = [ta.c, tb.c].find(isLoad), wg = [ta.c, tb.c].some(c => isWago(c) || c.type === 'node');
   const kind = ta.r !== 'X' ? ta.r : tb.r !== 'X' ? tb.r : 'L';
   const w = {id: uid('w'), a, b, kind, mm: ld ? KIND_MM[ld.kind] || 2.5 : wg ? 2.5 : 10};
   snapshot(); S.wires.push(w); sel = {kind: 'wire', id: w.id}; save(); renderInspector();
@@ -1068,7 +1406,7 @@ function connectCable(a, b) {
   if (a.split(':')[0] === b.split(':')[0]) { toast('Двухжильный провод соединяет два разных элемента'); return; }
   const dup = (x, y) => S.wires.some(w => (w.a === x && w.b === y) || (w.a === y && w.b === x));
   if (dup(a, b) || dup(a2, b2)) { toast('Эти клеммы уже соединены'); return; }
-  const ld = [getTerm(a).c, getTerm(b).c].find(c => c.type === 'load'), mm = ld ? KIND_MM[ld.kind] || 2.5 : 10;
+  const ld = [getTerm(a).c, getTerm(b).c].find(isLoad), mm = ld ? KIND_MM[ld.kind] || 2.5 : 10;
   snapshot();
   const cable = uid('k'), w1 = {id: uid('w'), a, b, kind: 'L', mm, cable}, w2 = {id: uid('w'), a: a2, b: b2, kind: 'N', mm, cable};
   S.wires.push(w1, w2); sel = {kind: 'wire', id: w1.id}; save(); renderInspector();
@@ -1076,6 +1414,8 @@ function connectCable(a, b) {
 }
 const link = (a, b) => mode2 ? connectCable(a, b) : connect(a, b);
 const cableOf = w => w.cable ? S.wires.filter(x => x.cable === w.cable) : [w];
+$('#f-pitch').addEventListener('change', e => { snapshot(); S.pitch = +e.target.value; save(); render(); });
+function syncPitch() { const el = document.getElementById('f-pitch'); if (el) el.value = String(pitch()); }
 function setMode(two) {
   mode2 = two; pending = null;
   $('#m-1').classList.toggle('on', !two); $('#m-2').classList.toggle('on', two);
@@ -1093,7 +1433,14 @@ function addComp(spec) {
   if (type === 'supply') Object.assign(c, {name: 'Ввод', allowKw: 10});
   if (type === 'br1') Object.assign(c, {name: nextName('QF'), rating: 16, curve: 'C', on: true});
   if (type === 'br2') Object.assign(c, {name: nextName('QF'), rating: 40, curve: 'C', on: true});
-  if (type === 'meter') Object.assign(c, {name: nextName('PI')}, kind === 'soviet' ? {model: 'soviet', kwh: 4217.3} : {});
+  if (type === 'meter') Object.assign(c, {name: nextName('PI')}, kind === 'soviet' ? {model: 'soviet', kwh: 4217.3} : kind === 'din' ? {model: 'din'} : {});
+  if (type === 'rail') Object.assign(c, {name: nextName('Рейка '), n: 12});
+  if (type === 'rcd') Object.assign(c, {name: nextName('QD'), rating: 40, leak: 30, on: true});
+  if (type === 'stab') Object.assign(c, {name: nextName('СН'), rating: 16});
+  if (type === 'dinsock') Object.assign(c, {name: nextName('XS'), kw: 0.5});
+  if (type === 'bell') Object.assign(c, {name: nextName('HA'), kw: 0.01});
+  if (type === 'bellbtn') Object.assign(c, {name: nextName('SB')});
+  if (type === 'dinbus') Object.assign(c, {name: nextName('Шина N'), mw: 1, n: 13});
   if (type === 'fuse') Object.assign(c, {name: nextName('FU'), rating: 16, on: true});
   if (type === 'wago22') Object.assign(c, {name: nextName('X'), color: 'orange', color2: 'blue', split: 'rows'});
   if (type === 'nbus') Object.assign(c, {name: 'Шина N', n: 6});
@@ -1106,10 +1453,18 @@ function addComp(spec) {
   let x = snap(view.x + vw / 2 - cw(c) / 2), y = snap(view.y + vh / 2 - chh(c) / 2);
   while (S.comps.some(o => o.x === x && o.y === y)) { x += 20; y += 20; }
   c.x = x; c.y = y;
+  if (isDin(c)) {  // на ближайшую к центру экрана рейку, где есть место
+    const cx = view.x + vw / 2, cy = view.y + vh / 2;
+    for (const r of S.comps.filter(r => r.type === 'rail').sort((a, b) => Math.hypot(a.x - cx, a.y - cy) - Math.hypot(b.x - cx, b.y - cy))) {
+      const k = Array.from({length: r.n - mods(c) + 1}, (_, i) => i).find(i => slotFree(r, i, mods(c), c.id));
+      if (k !== undefined) { c.x = r.x + 10 + k * MOD; c.y = r.y; break; }
+    }
+  }
   S.comps.push(c); sel = {kind: 'comp', id: c.id}; save(); renderInspector(); render();
 }
 
 /* ---------- мышь и касания ---------- */
+const capture = e => { try { svg.setPointerCapture(e.pointerId); } catch (err) {} };
 function pt(e) { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); }
 svg.addEventListener('pointerdown', e => {
   if (e.button > 0) return;
@@ -1117,11 +1472,13 @@ svg.addEventListener('pointerdown', e => {
   if (pointers.size === 2) {  // два пальца — масштаб и сдвиг поля
     const [a, b] = [...pointers.values()];
     pending = null; drag = {mode: 'pinch', d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, z0: zoom, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2};
-    svg.setPointerCapture(e.pointerId); render(); return;
+    capture(e); render(); return;
   }
   const p = pt(e), term = e.target.closest('[data-term]'), act = e.target.closest('[data-act]'),
         cg = e.target.closest('[data-comp]'), wg = e.target.closest('[data-wire]');
-  svg.setPointerCapture(e.pointerId);
+  capture(e);
+  const press = e.target.closest('[data-act="press"]');
+  if (press && cg) { pending = null; pressed.add(cg.dataset.comp); drag = {mode: 'press', id: cg.dataset.comp}; render(); return; }
   if (VIEW) {  // только выбрать, чтобы подсветить провода; поле двигается откуда угодно
     if (cg) { if (!sel || sel.id !== cg.dataset.comp) select({kind: 'comp', id: cg.dataset.comp}); }
     else if (wg) select({kind: 'wire', id: wg.dataset.wire});
@@ -1138,11 +1495,20 @@ svg.addEventListener('pointerdown', e => {
   if (act && cg) { drag = null; toggle(cg.dataset.comp); return; }
   if (cg) {
     const c = comp(cg.dataset.comp);
+    if (e.shiftKey) {  // добавить в выделение или убрать из него
+      const ids = new Set(multi); if (sel?.kind === 'comp') ids.add(sel.id);
+      ids.has(c.id) ? ids.delete(c.id) : ids.add(c.id); selectMany([...ids]); drag = null; return;
+    }
+    if (multi.has(c.id)) {  // тянем всю группу; рейки везут свои модули
+      const ids = new Set(multi); for (const id of multi) { const r = comp(id); if (r?.type === 'rail') modulesOn(r).forEach(m => ids.add(m.id)); }
+      drag = {mode: 'move', id: c.id, ox: p.x - c.x, oy: p.y - c.y, sx: e.clientX, sy: e.clientY, moved: false, group: [...ids].filter(id => id !== c.id)}; return;
+    }
     if (!sel || sel.id !== c.id) select({kind: 'comp', id: c.id}); else if (hadPending) render();
-    drag = {mode: 'move', id: c.id, ox: p.x - c.x, oy: p.y - c.y, sx: e.clientX, sy: e.clientY, moved: false}; return;
+    drag = {mode: 'move', id: c.id, ox: p.x - c.x, oy: p.y - c.y, sx: e.clientX, sy: e.clientY, moved: false, kids: c.type === 'rail' ? modulesOn(c).map(m => m.id) : null}; return;
   }
   if (wg) { drag = null; select({kind: 'wire', id: wg.dataset.wire}); return; }
   if (hadPending) render();
+  if (e.shiftKey || boxMode) { drag = {mode: 'box', sx: e.clientX, sy: e.clientY, p0: p, add: e.shiftKey, moved: false}; return; }
   drag = {mode: 'pan', sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y, moved: false};
 });
 svg.addEventListener('pointermove', e => {
@@ -1161,8 +1527,19 @@ svg.addEventListener('pointermove', e => {
     if (!drag.moved && dist < 4) return;
     if (!drag.moved) { snapshot(); drag.moved = true; }
     const c = comp(drag.id), p = pt(e);
-    const nx = snap(p.x - drag.ox), ny = snap(p.y - drag.oy);
-    if (nx !== c.x || ny !== c.y) { c.x = nx; c.y = ny; render(); }
+    let nx = snap(p.x - drag.ox), ny = snap(p.y - drag.oy);
+    if (isDin(c) && !drag.group) { const sn = snapToRail(c, p.x - drag.ox, p.y - drag.oy); if (sn) { nx = sn.x; ny = sn.y; } }
+    if (nx !== c.x || ny !== c.y) {
+      const dx = nx - c.x, dy = ny - c.y; c.x = nx; c.y = ny;
+      for (const id of drag.kids || drag.group || []) { const m = comp(id); if (m) { m.x += dx; m.y += dy; } }
+      render();
+    }
+  } else if (drag.mode === 'box') {
+    if (dist > 4) drag.moved = true;
+    const p = pt(e), r = document.getElementById('boxsel');
+    r.setAttribute('x', Math.min(p.x, drag.p0.x)); r.setAttribute('y', Math.min(p.y, drag.p0.y));
+    r.setAttribute('width', Math.abs(p.x - drag.p0.x)); r.setAttribute('height', Math.abs(p.y - drag.p0.y)); r.setAttribute('visibility', 'visible');
+    drag.p1 = p;
   } else if (drag.mode === 'pan') {
     if (dist > 4) drag.moved = true;
     view.x = drag.vx - (e.clientX - drag.sx) / zoom; view.y = drag.vy - (e.clientY - drag.sy) / zoom; applyView();
@@ -1171,18 +1548,27 @@ svg.addEventListener('pointermove', e => {
 function endPointer(e) {
   pointers.delete(e.pointerId);
   if (drag?.mode === 'pinch') { if (!pointers.size) drag = null; return; }
+  if (drag?.mode === 'press') { pressed.delete(drag.id); drag = null; render(); return; }
   if (drag?.mode === 'wire') {
     const el = document.elementFromPoint(e.clientX, e.clientY), t = el && el.closest && el.closest('[data-term]');
     if (t && pending && t.dataset.term !== pending) { link(pending, t.dataset.term); pending = null; render(); }
     else if (drag.moved) { pending = null; render(); }
   }
-  if (drag?.mode === 'move' && drag.moved) save();
+  if (drag?.mode === 'move' && drag.moved) { save(); drag = null; render(); }
+  if (drag?.mode === 'box') {  // всё, что задела рамка
+    const d = drag; drag = null;
+    if (!d.moved || !d.p1) { if (!d.add) selectMany([]); return; }
+    const x0 = Math.min(d.p0.x, d.p1.x), x1 = Math.max(d.p0.x, d.p1.x), y0 = Math.min(d.p0.y, d.p1.y), y1 = Math.max(d.p0.y, d.p1.y);
+    const hit = S.comps.filter(c => c.x < x1 && c.x + cw(c) > x0 && c.y < y1 && c.y + chh(c) > y0).map(c => c.id);
+    const base = d.add ? [...multi, ...(sel?.kind === 'comp' ? [sel.id] : [])] : [];
+    selectMany([...new Set([...base, ...hit])]); return;
+  }
   // на телефоне выделение снимается только крестиком, чтобы можно было листать схему
-  if (drag?.mode === 'pan' && !drag.moved && (!coarse || VIEW) && sel) select(null);
+  if (drag?.mode === 'pan' && !drag.moved && (!coarse || VIEW) && (sel || multi.size)) select(null);
   drag = null;
 }
 svg.addEventListener('pointerup', endPointer);
-svg.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); drag = null; });
+svg.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); if (drag?.mode === 'press') { pressed.delete(drag.id); render(); } drag = null; });
 // Колесо и тачпад двигают поле, Ctrl + колесо и щипок на тачпаде — масштаб под курсором
 svg.addEventListener('wheel', e => {
   e.preventDefault();
@@ -1194,9 +1580,10 @@ document.addEventListener('keydown', e => {
   const typing = /INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName || '') || $('#io').open;
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !typing && !VIEW) { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); return; }
   if (typing) return;
-  if (e.key === 'Escape') { if (!sel && !pending && full) setFull(false); else { pending = null; select(null); } }
+  if (e.key === 'Escape') { if (!sel && !multi.size && !pending && full) setFull(false); else { pending = null; select(null); } }
   if (VIEW) return;
-  if ((e.key === 'Delete' || e.key === 'Backspace') && sel) { e.preventDefault(); delSel(); }
+  if ((e.key === 'Delete' || e.key === 'Backspace') && (sel || multi.size)) { e.preventDefault(); delSel(); }
+  if ((e.metaKey || e.ctrlKey) && e.code === 'KeyA') { e.preventDefault(); selectMany(S.comps.map(c => c.id)); }
   if ((e.code === 'KeyF') && !e.metaKey && !e.ctrlKey && sel?.kind === 'comp') { e.preventDefault(); flip(sel.id); }
   if ((e.code === 'KeyS') && !e.metaKey && !e.ctrlKey && sel?.kind === 'comp') { e.preventDefault(); swapLN(sel.id); }
 });
@@ -1204,8 +1591,16 @@ document.addEventListener('keydown', e => {
 /* ---------- палитра и кнопки ---------- */
 const PAL = [
   ['supply', 'Ввод', '230 В от этажного щита', '<rect x="3" y="7" width="26" height="18" rx="3" fill="var(--sup)"/><path d="M17 10l-5 7h4l-1 5 5-7h-4z" fill="var(--live)"/>', 'pal-panel'],
-  ['br2', 'Автомат 2P', 'вводной, рвёт фазу и ноль', '<rect x="5" y="3" width="22" height="26" rx="2" class="mod"/><rect x="10" y="11" width="12" height="10" rx="1.5" class="lv-slot"/><rect x="11" y="12" width="10" height="4.5" rx="1" fill="var(--accent)"/>', 'pal-panel'],
-  ['br1', 'Автомат 1P', 'защита линии по фазе', '<rect x="10" y="3" width="12" height="26" rx="2" class="mod"/><rect x="13" y="11" width="6" height="10" rx="1.5" class="lv-slot"/><rect x="14" y="12" width="4" height="4.5" rx="1" fill="var(--accent)"/>', 'pal-panel'],
+  ['rail', 'DIN-рейка', 'любой длины, модули защёлкиваются', '<rect x="1" y="11" width="30" height="10" rx="1.5" fill="var(--rail)" stroke="var(--rail-edge)"/><rect x="1" y="13" width="30" height="1.5" fill="var(--rail-edge)"/><rect x="1" y="17.5" width="30" height="1.5" fill="var(--rail-edge)"/>', 'pal-din'],
+  ['br2', 'Автомат 2P', '2 модуля, рвёт фазу и ноль', '<rect x="5" y="3" width="22" height="26" rx="2" class="mod"/><rect x="10" y="11" width="12" height="10" rx="1.5" class="lv-slot"/><rect x="11" y="12" width="10" height="4.5" rx="1" fill="var(--accent)"/>', 'pal-din'],
+  ['br1', 'Автомат 1P', '1 модуль, защита по фазе', '<rect x="10" y="3" width="12" height="26" rx="2" class="mod"/><rect x="13" y="11" width="6" height="10" rx="1.5" class="lv-slot"/><rect x="14" y="12" width="4" height="4.5" rx="1" fill="var(--accent)"/>', 'pal-din'],
+  ['rcd', 'УЗО', '2 модуля, 30 мА', '<rect x="5" y="3" width="22" height="26" rx="2" class="mod"/><rect x="10" y="8" width="12" height="9" rx="1.5" class="lv-slot"/><rect x="11" y="9" width="10" height="4" rx="1" fill="var(--accent)"/><rect x="18" y="20" width="6" height="5" rx="1" fill="#2f6fd6"/>', 'pal-din'],
+  ['stab', 'Стабилизатор', '2 модуля, держит 230 В', '<rect x="5" y="3" width="22" height="26" rx="2" class="mod"/><rect x="8" y="10" width="16" height="9" rx="1.5" fill="#0f2318"/><text x="16" y="17" font-size="6.5" text-anchor="middle" fill="#3fe07a" font-family="monospace">230</text>', 'pal-din'],
+  ['dinsock', 'Розетка на рейку', '2 модуля', '<rect x="5" y="3" width="22" height="26" rx="2" class="mod"/><circle cx="16" cy="17" r="8" class="sock-face"/><circle cx="13" cy="17" r="1.6" class="sock-pin"/><circle cx="19" cy="17" r="1.6" class="sock-pin"/>', 'pal-din'],
+  ['dinbus', 'Шина на рейку', '1 модуль, 13 гнёзд', '<rect x="10" y="3" width="12" height="26" rx="2" class="bus-base"/><rect x="11.5" y="5" width="3.5" height="22" rx="1" class="brass"/><rect x="17" y="5" width="3.5" height="22" rx="1" class="brass"/>', 'pal-din'],
+  ['bellbtn', 'Кнопка', 'замыкает, пока держите', '<rect x="5" y="5" width="22" height="22" rx="5" class="btn-plate"/><circle cx="16" cy="16" r="7" class="btn-ring"/><circle cx="16" cy="16" r="4.5" fill="var(--live)"/>', 'pal-din'],
+  ['bell', 'Звонок', '1 модуль', '<rect x="10" y="3" width="12" height="26" rx="2" class="mod"/><path d="M16 9c-2.5 0-3.6 2-3.6 4.4v3l-1.6 2.2h10.4l-1.6-2.2v-3C19.6 11 18.5 9 16 9z" fill="var(--live)"/>', 'pal-din'],
+  ['meter:din', 'Счётчик DIN', '4 модуля, электронный', '<rect x="1" y="6" width="30" height="20" rx="2" class="mtr"/><rect x="4" y="10" width="24" height="7" rx="1" class="lcd"/><circle cx="6" cy="21.5" r="1.3" fill="#e5352b"/>', 'pal-din'],
   ['fuse', 'Пробка', 'советская, автомат ПАР', '<rect x="6" y="2" width="20" height="28" rx="3" fill="var(--bakelite)"/><circle cx="16" cy="16" r="8.5" fill="var(--cap)"/><circle cx="16" cy="17" r="3.2" fill="var(--sov-red)"/>', 'pal-panel'],
   ['meter:soviet', 'Счётчик СО-И446', 'советский, с диском', '<rect x="3" y="4" width="26" height="24" rx="4" fill="var(--bakelite)"/><rect x="6" y="8" width="20" height="10" rx="1.5" fill="var(--sov-glass)"/><rect x="8" y="10" width="13" height="4" fill="var(--bakelite)"/><rect x="21" y="10" width="3" height="4" fill="var(--sov-red)"/><rect x="8" y="15.5" width="16" height="1.6" rx=".8" fill="var(--sov-red)"/>', 'pal-panel'],
   ['meter', 'Счётчик', 'однофазный, клеммы 1–4', '<rect x="3" y="4" width="26" height="24" rx="3" class="mtr"/><rect x="6" y="8" width="20" height="8" rx="1.5" class="lcd"/><circle cx="8" cy="21" r="1.6" fill="#e5352b"/>', 'pal-panel'],
@@ -1257,9 +1652,9 @@ function setView(on, init) {
   $('#b-view').setAttribute('aria-pressed', on);
   $('#b-view').title = on ? 'Вернуться к редактированию' : 'Только просмотр, без изменений';
   if (init) { /* при загрузке адрес не трогаем: в нём может быть схема */ }
-  else if (on) history.replaceState(null, '', location.pathname + '?view' + location.hash);
+  else if (on) setUrl(location.pathname + '?view' + location.hash);
   else {
-    history.replaceState(null, '', location.pathname);
+    setUrl(location.pathname);
     if (viewingShared) {  // чужая схема из ссылки становится своей копией; своя — на шаг «Отменить»
       viewingShared = false; undo.push(JSON.stringify(loadState())); redo = []; save();
       toast('Схема из ссылки теперь ваша. Вернуть свою — «Отменить»');
@@ -1268,6 +1663,8 @@ function setView(on, init) {
   renderInspector(); render();
 }
 $('#b-view').addEventListener('click', () => setView(!VIEW));
+$('#b-box').addEventListener('click', () => { boxMode = !boxMode; $('#b-box').classList.toggle('on', boxMode); $('#b-box').setAttribute('aria-pressed', boxMode); updateHint();
+  toast(boxMode ? 'Рамка: тяните по пустому месту, чтобы выделить' : 'Рамка выключена: пустое место снова двигает поле'); });
 $('#sh-view').addEventListener('click', () => sendLink(shareLink(true), true));
 $('#sh-edit').addEventListener('click', () => sendLink(shareLink(false), true));
 window.addEventListener('hashchange', openShared);
