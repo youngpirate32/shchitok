@@ -1,0 +1,1238 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Редактор щитка</title>
+<meta name="description" content="Редактор квартирной проводки: ввод, пробки, счётчик, WAGO, фаза и ноль.">
+<style>
+/* то, что раньше подставлял хостинг: сброс отступов и безопасные зоны телефона */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
+body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Раскладка: палитра элементов слева, монтажная панель щитка по центру, параметры и проверка справа */
+:root{
+  --bg:#e7eae6; --panel:#d3d8d3; --grid:#b3bbb4; --surface:#f6f7f5;
+  --ink:#1b2120; --muted:#5b6661; --line:#c2c9c3;
+  --module:#fbfbf8; --module-2:#e2e5e1; --module-edge:#9ea8a1; --slot:#3a423f; --screw:#eef0ec;
+  --accent:#c9500c; --accent-ink:#ffffff; --accent-soft:#f6dccb;
+  --wire-l:#7a4520; --wire-n:#1f5fc8; --n-soft:#d7e2f5; --flow:rgba(255,255,255,.85);
+  --brass:#c79a3b; --brass-dk:#8a6a25; --wago:#ee7a00; --wago-body:#e4e8ea; --sheath:#f1f2ef; --sheath-edge:#8b9590; --sel:#ffd000;
+  --bakelite:#2a2522; --bakelite-2:#3d3631; --cap:#ece4d2; --cap-ink:#3a2f25; --sov-red:#c62a1f; --sov-glass:#cfd6cc; --sov-ink:#ece6d8; --sov-glass-ink:#2a2f2a;
+  --meter:#c9cec9; --lcd:#bccaa9; --lcd-ink:#1d2a18; --led-off:#6a726e;
+  --sup:#1b2120; --sup-ink:#f1f3f0; --sup-muted:#a3ada7;
+  --live:#efb02a; --ok:#2e7d4f; --warn:#a96400; --err:#c0392b;
+  --f-cond:"IBM Plex Sans Condensed","Arial Narrow","Roboto Condensed",sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141817; --panel:#1c2220; --grid:#343c39; --surface:#1f2523;
+  --ink:#e4e9e6; --muted:#9aa5a0; --line:#323a37;
+  --module:#2c3331; --module-2:#232a28; --module-edge:#4f5a55; --slot:#0d1110; --screw:#3a423f;
+  --accent:#f07b3a; --accent-ink:#1a0f08; --accent-soft:#3d2416;
+  --wire-l:#b9773f; --wire-n:#5089f0; --n-soft:#1c2a40; --flow:rgba(255,255,255,.75);
+  --brass:#c9a24e; --brass-dk:#7d6022; --wago:#f08a1c; --wago-body:#3a424a; --sheath:#3b4341; --sheath-edge:#66716c; --sel:#ffe014;
+  --meter:#2a302e; --lcd:#9db48a; --lcd-ink:#13200e; --led-off:#3b4340;
+  --sup:#d9dfdb; --sup-ink:#141817; --sup-muted:#5d6762;
+  --live:#f5c04a; --ok:#4cb276; --warn:#e0a33a; --err:#ef5d4d;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#141817; --panel:#1c2220; --grid:#343c39; --surface:#1f2523;
+  --ink:#e4e9e6; --muted:#9aa5a0; --line:#323a37;
+  --module:#2c3331; --module-2:#232a28; --module-edge:#4f5a55; --slot:#0d1110; --screw:#3a423f;
+  --accent:#f07b3a; --accent-ink:#1a0f08; --accent-soft:#3d2416;
+  --wire-l:#b9773f; --wire-n:#5089f0; --n-soft:#1c2a40; --flow:rgba(255,255,255,.75);
+  --brass:#c9a24e; --brass-dk:#7d6022; --wago:#f08a1c; --wago-body:#3a424a; --sheath:#3b4341; --sheath-edge:#66716c; --sel:#ffe014;
+  --meter:#2a302e; --lcd:#9db48a; --lcd-ink:#13200e; --led-off:#3b4340;
+  --sup:#d9dfdb; --sup-ink:#141817; --sup-muted:#5d6762;
+  --live:#f5c04a; --ok:#4cb276; --warn:#e0a33a; --err:#ef5d4d;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2{margin:0;text-wrap:balance}
+h2{font:600 12px/1.2 var(--f-cond);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+.app{height:100%;box-sizing:border-box;display:grid;grid-template-columns:212px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:12px;
+  padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* шапка */
+.top{grid-column:1/-1;display:flex;align-items:center;gap:12px 24px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand svg{width:34px;height:34px;flex:none}
+.brand h1{font:700 22px/1 var(--f-cond);letter-spacing:.01em}
+.brand p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+.stats{display:flex;gap:6px;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column;padding:5px 12px;border-left:1px solid var(--line);min-width:72px}
+.stat span{font:600 10.5px var(--f-cond);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.stat b{font:500 17px/1.25 var(--f-mono);font-variant-numeric:tabular-nums}
+.stat b small{font-size:11px;color:var(--muted);font-weight:400}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:6px 11px;cursor:pointer;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--module-edge)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--err)}
+.btn.confirm{background:var(--err);border-color:var(--err);color:#fff}
+.btn.icon{padding:6px 9px;font-family:var(--f-mono)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* палитра */
+.palette{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.pal-group{display:flex;flex-direction:column;gap:4px}
+.pal-group h2{margin-bottom:4px}
+.pal{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid transparent;background:transparent;border-radius:7px;padding:6px 8px;cursor:pointer}
+.pal:hover{background:var(--surface);border-color:var(--line)}
+.pal svg{width:30px;height:30px;flex:none}
+.pal b{display:block;font:600 14px/1.2 var(--f-cond)}
+.pal small{display:block;font-size:11.5px;color:var(--muted);line-height:1.3}
+.legend{display:flex;flex-direction:column;gap:6px;font-size:12.5px}
+.legend div{display:flex;align-items:center;gap:8px}
+.sw{display:inline-block;width:22px;height:4px;border-radius:2px;flex:none}
+.sw.L{background:var(--wire-l)} .sw.N{background:var(--wire-n)}
+.keys{margin:0;padding:0;list-style:none;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+kbd{font:500 11px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;background:var(--surface);color:var(--ink)}
+
+/* монтажная панель */
+.stage{min-width:0;min-height:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.stage-bar{display:flex;align-items:center;gap:10px;padding:7px 10px;border-bottom:1px solid var(--line);background:var(--surface);flex-wrap:wrap}
+.hint{flex:1;min-width:180px;font-size:12.5px;color:var(--muted)}
+.hint.active{color:var(--accent);font-weight:500}
+.zoom{display:flex;align-items:center;gap:4px}
+.zoom output{font:500 12px var(--f-mono);min-width:42px;text-align:center;color:var(--muted)}
+.canvas-wrap{flex:1;min-height:0;overflow:hidden;position:relative}
+#svg{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none}
+.toast{position:absolute;left:50%;top:12px;z-index:6;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:6px 12px;border-radius:6px;font-size:12.5px;pointer-events:none;opacity:0;transition:opacity .2s}
+.toast.show{opacity:1}
+.stage-wrap{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
+/* параметры выделенного элемента: панель поверх низа поля */
+.sheet{position:absolute;left:12px;right:12px;bottom:12px;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:10px 12px 12px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 12px;max-height:55%;overflow:auto;box-sizing:border-box}
+.sheet[hidden]{display:none}
+.sheet.min>:not(.sh-head){display:none}
+.sh-head{flex:1 0 100%;display:flex;align-items:center;gap:10px}
+.sh-head h3{margin:0;font:700 16px/1.2 var(--f-cond);flex:1;min-width:0}
+.sheet .fld{flex:1 1 150px;max-width:240px}
+.sheet .row2{flex:1 1 300px;max-width:420px}
+.sheet .lead{flex:1 0 100%;margin:0;color:var(--muted);font-size:13px}
+.sheet .readout{flex:1 0 100%;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px 18px}
+.sheet .ro{gap:6px}
+.sheet .bar{flex:0 0 110px}
+.fab{display:none;position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:4;border-radius:999px;padding:12px 18px;font-weight:600;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.float-tools{display:none;position:absolute;top:max(10px,env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-right,0px));z-index:4;gap:6px}
+.float-tools .btn{box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.pal-head{display:none;align-items:center;justify-content:space-between}
+.scrim{display:none}
+.btn svg{width:15px;height:15px;flex:none}
+/* полный экран: только схема */
+.app.full{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);padding:0;gap:0}
+.app.full .top,.app.full .palette,.app.full .stage-bar,.app.full .fab{display:none}
+.app.full .stage{border:0;border-radius:0}
+.app.full .float-tools{display:flex}
+
+/* правая колонка */
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fld span{font-size:12px;color:var(--muted)}
+.fld input,.fld select{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:6px 8px;min-width:0;width:100%;box-sizing:border-box}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:0;background:var(--bg);padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--accent-soft);font-weight:600}
+.readout{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.readout:empty{display:none}
+.ro{display:flex;justify-content:space-between;gap:10px}
+.ro span{color:var(--muted)}
+.ro b{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+.bar{height:6px;border-radius:3px;background:var(--module-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:3px}
+.bar i.high{background:var(--warn)} .bar i.over{background:var(--err)}
+
+/* элементы на схеме */
+.dot{fill:var(--grid)}
+.comp{cursor:grab}
+.comp.dragging{cursor:grabbing}
+.mod{fill:var(--module);stroke:var(--module-edge)}
+.mod-term{fill:var(--module-2)}
+.m-name{font:600 10px var(--f-cond);fill:var(--muted);text-anchor:middle}
+.m-name.l{text-anchor:start;font-size:11.5px}
+.m-rate{font:500 11px var(--f-mono);fill:var(--ink);text-anchor:middle}
+.lever{cursor:pointer}
+.lv-slot{fill:var(--slot)}
+.lv-knob{fill:var(--module-2);stroke:var(--module-edge)}
+.lever.on .lv-knob{fill:var(--accent);stroke:none}
+.lever:hover .lv-slot{fill:var(--muted)}
+.flag.on{fill:#d23b2a} .flag.off{fill:#2f9a4e}
+.sup{fill:var(--sup)}
+.sup-t{font:600 13px var(--f-cond);fill:var(--sup-ink)}
+.sup-s{font:400 10.5px var(--f-body);fill:var(--sup-muted)}
+.sup-l{font:600 10px var(--f-mono);fill:var(--sup-ink);text-anchor:middle}
+.mtr{fill:var(--meter);stroke:var(--module-edge)}
+.lcd{fill:var(--lcd)}
+.lcd-big{font:500 15px var(--f-mono);fill:var(--lcd-ink);text-anchor:end}
+.lcd-sm{font:400 9.5px var(--f-mono);fill:var(--lcd-ink);text-anchor:end;opacity:.8}
+.mtr-s{font:400 9px var(--f-mono);fill:var(--muted)}
+.mtr-cover{fill:var(--module-2);stroke:var(--module-edge)}
+.mtr-n{font:600 10px var(--f-mono);fill:var(--ink);text-anchor:middle}
+.led{fill:var(--led-off)}
+.led.blink{fill:#e5352b;animation:blink 1.1s steps(2,jump-none) infinite}
+.bus-base{fill:var(--n-soft);stroke:var(--wire-n)}
+.brass{fill:var(--brass)}
+.screw{fill:var(--screw);stroke:var(--brass-dk)}
+.fz-base{fill:var(--bakelite);stroke:var(--module-edge)}
+.fz-term{fill:var(--bakelite-2)}
+.fz-name{font:600 10px var(--f-cond);fill:var(--sov-ink);text-anchor:middle}
+.fz-cap{fill:var(--cap);stroke:var(--bakelite-2);stroke-width:1.5}
+.fz-rib{fill:none;stroke:var(--cap-ink);stroke-opacity:.25;stroke-width:2;stroke-dasharray:1.2 3.2}
+.fz-model{font:600 6.5px var(--f-mono);fill:var(--cap-ink);text-anchor:middle}
+.fz-red{fill:var(--sov-red);stroke:var(--bakelite);stroke-width:1}
+.fz-out{fill:none;stroke:var(--sov-red);stroke-opacity:.45;stroke-width:2}
+.fz-black{fill:var(--bakelite)}
+.sov{fill:var(--bakelite);stroke:var(--module-edge)}
+.sov-t{font:600 11px var(--f-cond);fill:var(--sov-ink)}
+.sov-s{font:400 9.5px var(--f-mono);fill:var(--sov-ink);text-anchor:end}
+.sov-glass{fill:var(--sov-glass)}
+.sov-cell{fill:var(--bakelite)} .sov-cell.red{fill:var(--sov-red)}
+.sov-dig{font:600 13px var(--f-mono);fill:#f3efe4;text-anchor:middle}
+.sov-disk{fill:#b9bdb8;stroke:#7e837e}
+.sov-mark{fill:var(--sov-red)}
+.sov-mark.spin{animation:disk linear infinite}
+.sov-fine{font:400 7.5px var(--f-mono);fill:var(--sov-glass-ink)}
+.sov-cover{fill:var(--bakelite-2);stroke:var(--module-edge)}
+.sov-n{font:600 10px var(--f-mono);fill:var(--sov-ink);text-anchor:middle}
+.wago-body{fill:var(--wago-body);stroke:var(--module-edge)}
+.wago-lever{fill:var(--wago)}
+.wago-hole{fill:var(--slot)}
+.term.X .t-ring{stroke:var(--wago)}
+.node-body{fill:var(--surface);fill-opacity:.75;stroke:var(--module-edge);stroke-dasharray:3 2}
+.term.node .t-ring{stroke:var(--ink)}
+.load{fill:var(--surface);stroke:var(--module-edge)}
+.load.on{stroke:var(--ok);stroke-width:1.5}
+.ld-name{font:600 13px var(--f-cond);fill:var(--ink)}
+.ld-sub{font:400 10.5px var(--f-mono);fill:var(--muted)}
+.t-lbl{font:600 9px var(--f-mono);fill:var(--muted);text-anchor:middle}
+.i-st{fill:none;stroke:var(--muted);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.i-f{fill:var(--muted)}
+.ico.on .i-st{stroke:var(--ink)} .ico.on .i-f{fill:var(--ink)}
+.ico.on .i-glow{fill:var(--live)}
+.sel-ring{fill:var(--sel);fill-opacity:.18;stroke:var(--sel);stroke-width:3}
+.comp.dim,.term.dim{opacity:.35}
+.wire.dim{opacity:.2}
+
+.wire .hit{fill:none;stroke:transparent;stroke-width:14;cursor:pointer}
+.wire .core{fill:none;stroke-linejoin:round;stroke-linecap:round}
+.wire.L .core{stroke:var(--wire-l)} .wire.N .core{stroke:var(--wire-n)}
+.wire.dead .core{opacity:.42}
+.wire.fault .core{stroke:var(--err);animation:blink .5s steps(2,jump-none) infinite}
+.wire .halo{fill:none;stroke:var(--sel);opacity:.75;stroke-linejoin:round;stroke-linecap:round}
+.wire .flow{fill:none;stroke:var(--flow);stroke-dasharray:2 12;stroke-linecap:round;animation:flow .9s linear infinite;pointer-events:none}
+.term{cursor:crosshair}
+.t-hit{fill:transparent}
+.t-ring{fill:var(--screw);stroke-width:2.2}
+.term.L .t-ring{stroke:var(--wire-l)} .term.N .t-ring{stroke:var(--wire-n)}
+.t-slot{stroke:var(--muted);stroke-width:1.3;stroke-linecap:round}
+.term:hover .t-ring,.term.pending .t-ring{fill:var(--accent)}
+.term:hover .t-slot,.term.pending .t-slot{stroke:var(--accent-ink)}
+.sheath-edge{fill:none;stroke:var(--sheath-edge);stroke-width:13;stroke-linejoin:round}
+.sheath{fill:none;stroke:var(--sheath);stroke-width:11;stroke-linejoin:round}
+.rubber{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:6 4;pointer-events:none}
+
+@keyframes disk{from{transform:translateX(0)}to{transform:translateX(130px)}}
+@keyframes flow{to{stroke-dashoffset:-14}}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion: reduce){.wire .flow,.led.blink,.wire.fault .core,.sov-mark.spin{animation:none}}
+
+dialog{border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:16px;width:min(560px,calc(100vw - 32px));box-sizing:border-box}
+dialog::backdrop{background:rgba(10,14,13,.45)}
+dialog form{display:flex;flex-direction:column;gap:10px}
+dialog textarea{width:100%;box-sizing:border-box;height:220px;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:8px;font:12px/1.4 var(--f-mono);resize:vertical}
+dialog .dlg-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+dialog p{margin:0;font-size:13px;color:var(--muted)}
+
+@media (max-width: 1100px){
+  .app{grid-template-columns:190px minmax(0,1fr)}
+  .stats{order:3;width:100%}
+}
+/* телефон: поле на весь экран, элементы — выезжающей шторкой снизу */
+@media (max-width: 720px){
+  .app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:8px;padding-block:8px}
+  .top{gap:6px 10px}
+  .brand p{display:none}
+  .brand h1{font-size:18px}
+  .brand svg{width:26px;height:26px}
+  .stats{flex-wrap:nowrap;overflow-x:auto}
+  .stat{padding:1px 10px;min-width:0}
+  .stat b{font-size:14px}
+  .actions{flex-wrap:nowrap;overflow-x:auto;max-width:100%}
+  .actions .btn{padding:5px 9px;font-size:12.5px}
+  .palette{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:75vh;overflow:auto;background:var(--surface);border-top:1px solid var(--line);border-radius:14px 14px 0 0;
+    padding-top:14px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+    transform:translateY(105%);transition:transform .2s ease;box-shadow:0 -10px 30px rgba(0,0,0,.25);visibility:hidden}
+  .app.pal-open .palette{transform:none;visibility:visible}
+  .app.pal-open .scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:29}
+  .pal-head{display:flex}
+  .pal-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px}
+  .keys-group{display:none}
+  .fab{display:inline-flex}
+  .stage-wrap.has-sheet .fab{display:none}
+  .stage-bar{padding:6px 8px;gap:6px}
+  .hint{flex:1 0 100%;min-width:0;font-size:12px}
+  .zoom{margin-left:auto}
+  .zoom output{min-width:34px}
+  .btn-label{display:none}
+  .sheet{left:8px;right:8px;bottom:8px;max-height:62%}
+  .sheet .fld,.sheet .row2{max-width:none}
+}
+@media (prefers-reduced-motion: reduce){.palette{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><rect x="9" y="2" width="16" height="30" rx="2.5" fill="var(--module)" stroke="var(--module-edge)"/><rect x="13" y="11" width="8" height="12" rx="1.5" fill="var(--slot)"/><rect x="14" y="12" width="6" height="5.5" rx="1" fill="var(--accent)"/><circle cx="17" cy="5.5" r="2" fill="var(--wire-l)"/><circle cx="17" cy="28.5" r="2" fill="var(--wire-l)"/></svg>
+      <div><h1>Щиток</h1><p>Однофазная квартирная проводка, 230 В</p></div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="actions">
+      <button class="btn" id="b-undo" title="Отменить (Ctrl+Z)">Отменить</button>
+      <button class="btn" id="b-redo" title="Повторить (Ctrl+Shift+Z)">Повторить</button>
+      <button class="btn" id="b-example">Пример</button>
+      <button class="btn" id="b-io">Схема в JSON</button>
+      <button class="btn" id="b-clear">Очистить</button>
+    </div>
+  </header>
+
+  <div class="scrim" id="scrim"></div>
+  <aside class="palette" aria-label="Элементы">
+    <div class="pal-head"><h2>Добавить на схему</h2><button class="btn icon" id="b-pal-close" aria-label="Закрыть">×</button></div>
+    <div class="pal-group"><h2>Щит</h2><div class="pal-list" id="pal-panel"></div></div>
+    <div class="pal-group"><h2>Потребители</h2><div class="pal-list" id="pal-loads"></div></div>
+    <div class="pal-group">
+      <h2>Провода</h2>
+      <div class="seg" role="group" aria-label="Какой провод тянуть">
+        <button id="m-1" class="on" aria-pressed="true">Одна жила</button>
+        <button id="m-2" aria-pressed="false">Две жилы</button>
+      </div>
+      <div class="legend">
+        <div><i class="sw L"></i>Фаза L — коричневый</div>
+        <div><i class="sw N"></i>Ноль N — синий</div>
+      </div>
+    </div>
+    <div class="pal-group keys-group">
+      <h2>Управление</h2>
+      <ul class="keys">
+        <li>Провод: тяните от клеммы к клемме</li>
+        <li>Рычажок автомата — вкл/выкл</li>
+        <li><kbd>F</kbd> клеммы сверху/снизу</li>
+        <li><kbd>S</kbd> поменять местами L и N</li>
+        <li><kbd>Del</kbd> удалить выбранное</li>
+        <li><kbd>Esc</kbd> снять выбор</li>
+        <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> отменить</li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <div class="stage-bar">
+      <div class="hint" id="hint" aria-live="polite"></div>
+      <div class="zoom">
+        <button class="btn icon" id="z-out" aria-label="Уменьшить">−</button>
+        <output id="z-val">100%</output>
+        <button class="btn icon" id="z-in" aria-label="Увеличить">+</button>
+        <button class="btn" id="z-fit" title="Показать всю схему">Вся схема</button>
+        <button class="btn" id="b-full" title="Только схема на весь экран"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span class="btn-label">Только схема</span></button>
+      </div>
+    </div>
+    <div class="stage-wrap">
+      <div class="canvas-wrap" id="wrap">
+        <svg id="svg" viewBox="0 0 1200 800" role="application" aria-label="Схема щитка"></svg>
+      </div>
+      <div class="toast" id="toast" role="status"></div>
+      <div class="float-tools"><button class="btn" id="b-fit2">Вся схема</button><button class="btn" id="b-exit"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2v4H2M14 6h-4V2M10 14v-4h4M2 10h4v4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Выйти</button></div>
+      <button class="btn primary fab" id="b-add">+ Элемент</button>
+      <section class="sheet" id="inspector" aria-label="Параметры элемента" hidden></section>
+    </div>
+  </main>
+</div>
+
+<dialog id="io">
+  <form method="dialog">
+    <h2>Схема в JSON</h2>
+    <p>Скопируйте текст, чтобы сохранить схему, или вставьте сохранённый и нажмите «Загрузить».</p>
+    <textarea id="io-text" spellcheck="false" aria-label="Схема в формате JSON"></textarea>
+    <p id="io-msg"></p>
+    <div class="dlg-actions">
+      <button class="btn" type="button" id="io-copy">Скопировать</button>
+      <button class="btn primary" type="button" id="io-apply">Загрузить</button>
+      <button class="btn" value="close">Закрыть</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const U = 230, GRID = 10, KEY = 'shchitok-v1';
+const SECTIONS = [1.5, 2.5, 4, 6, 10, 16];
+// Наибольший номинал автомата для медного провода этого сечения
+const CAP = {1.5: 10, 2.5: 16, 4: 25, 6: 32, 10: 50, 16: 63};
+const RATINGS = [6, 10, 13, 16, 20, 25, 32, 40, 50, 63];
+const KINDS = {flat: 'Квартира', light: 'Свет', socket: 'Розетки', stove: 'Плита', heater: 'Бойлер'};
+const KIND_KW = {flat: 7, light: 0.4, socket: 2.2, stove: 5.5, heater: 2};
+const KIND_MM = {flat: 10, light: 1.5, socket: 2.5, stove: 6, heater: 2.5};
+const TITLE = {supply: 'Ввод', br1: 'Автомат 1P', br2: 'Автомат 2P', meter: 'Счётчик', nbus: 'Нулевая шина', wago: 'Клемма WAGO', wago22: 'WAGO 2×2 проходная', fuse: 'Пробка ПАР', node: 'Точка соединения', load: 'Потребитель'};
+const WAGO_I = 32;  // WAGO 221: до 32 А
+// В серии 221 есть 412, 413 и 415; на 4 гнезда своего артикула нет, подписываем без него
+const FUSE_RATINGS = [6, 10, 16, 25];
+const WAGO_COLORS = {orange: ['Оранжевый', '#ee7a00'], blue: ['Синий', '#2f6fd6'], brown: ['Коричневый', '#8a5228'], grey: ['Серый', '#8c9196'],
+  red: ['Красный', '#d23b2a'], yellow: ['Жёлтый', '#e3b81c'], green: ['Зелёный', '#3f9a4a'], black: ['Чёрный', '#2b2b2b']};
+// «Разноцветные»: каждый рычажок своего цвета, по кругу
+const MIX = ['orange', 'blue', 'red', 'yellow', 'green', 'grey'];
+const fillOf = k => WAGO_COLORS[k] ? ` style="fill:${WAGO_COLORS[k][1]}"` : '';
+const lever22 = (c, t, i) => !c.color2 ? leverStyle(c, i) : fillOf((c.split === 'cols' ? t.x > 26 : t.s > 0) ? c.color2 : c.color);
+const leverStyle = (c, i) => { const k = c.color === 'mix' ? MIX[i % MIX.length] : c.color; return k && WAGO_COLORS[k] ? ` style="fill:${WAGO_COLORS[k][1]}"` : ''; };
+const isWago = c => !!c && (c.type === 'wago' || c.type === 'wago22');
+const rateLabel = c => c.type === 'fuse' ? c.rating + ' А' : c.curve + c.rating;
+const wagoModel = n => n === 4 ? 'на 4 гнезда' : '221-41' + n;
+
+// s: куда уходит провод от клеммы (1 — вниз, −1 — вверх), r: фаза или ноль
+const T = {
+  supply: {w: () => 160, h: () => 80, terms: () => [
+    {k: 'L', x: 50, y: 80, s: 1, r: 'L', tip: 'L — фаза ввода'},
+    {k: 'N', x: 110, y: 80, s: 1, r: 'N', tip: 'N — ноль ввода'}]},
+  br1: {w: () => 40, h: () => 100, terms: () => [
+    {k: 'in', x: 20, y: 0, s: -1, r: 'L', tip: 'Вход, питание сверху'},
+    {k: 'out', x: 20, y: 100, s: 1, r: 'L', tip: 'Выход на линию'}]},
+  br2: {w: () => 80, h: () => 100, terms: () => [
+    {k: 'Lin', x: 20, y: 0, s: -1, r: 'L', tip: 'L — вход'},
+    {k: 'Nin', x: 60, y: 0, s: -1, r: 'N', tip: 'N — вход'},
+    {k: 'Lout', x: 20, y: 100, s: 1, r: 'L', tip: 'L — выход'},
+    {k: 'Nout', x: 60, y: 100, s: 1, r: 'N', tip: 'N — выход'}]},
+  meter: {w: () => 150, h: () => 120, terms: () => [
+    {k: '1', x: 25, y: 120, s: 1, r: 'L', tip: '1 — фаза, вход'},
+    {k: '2', x: 55, y: 120, s: 1, r: 'L', tip: '2 — фаза, выход'},
+    {k: '3', x: 95, y: 120, s: 1, r: 'N', tip: '3 — ноль, вход'},
+    {k: '4', x: 125, y: 120, s: 1, r: 'N', tip: '4 — ноль, выход'}]},
+  nbus: {w: c => c.n * 24 + 16, h: () => 26, terms: c => Array.from({length: c.n}, (_, i) =>
+    ({k: 't' + i, x: 20 + i * 24, y: 26, s: 1, r: 'N', tip: 'Клемма нулевой шины'}))},
+  wago: {w: c => c.n * 20 + 12, h: () => 34, terms: c => Array.from({length: c.n}, (_, i) =>
+    ({k: 't' + i, x: 16 + i * 20, y: 34, s: 1, r: 'X', tip: 'Гнездо WAGO, все гнёзда соединены'}))},
+  node: {w: () => 28, h: () => 28, terms: () => [{k: 'p', x: 14, y: 14, s: 0, r: 'X', tip: 'Точка соединения: подключайте сколько угодно проводов'}]},
+  wago22: {w: () => 52, h: () => 44, terms: () => [
+    {k: 't0', x: 16, y: 0, s: -1, r: 'X', tip: 'Гнездо сверху, все четыре соединены'}, {k: 't1', x: 36, y: 0, s: -1, r: 'X', tip: 'Гнездо сверху, все четыре соединены'},
+    {k: 'b0', x: 16, y: 44, s: 1, r: 'X', tip: 'Гнездо снизу, все четыре соединены'}, {k: 'b1', x: 36, y: 44, s: 1, r: 'X', tip: 'Гнездо снизу, все четыре соединены'}]},
+  fuse: {w: () => 56, h: () => 100, terms: () => [
+    {k: 'in', x: 28, y: 0, s: -1, r: 'L', tip: 'Вход, питание сверху'},
+    {k: 'out', x: 28, y: 100, s: 1, r: 'L', tip: 'Выход на линию'}]},
+  load: {w: () => 150, h: () => 72, terms: () => [
+    {k: 'L', x: 45, y: 0, s: -1, r: 'L', tip: 'L — фаза'},
+    {k: 'N', x: 85, y: 0, s: -1, r: 'N', tip: 'N — ноль'}]},
+};
+
+const $ = s => document.querySelector(s);
+const svg = $('#svg'), wrap = $('#wrap');
+let S, sel = null, pending = null, drag = null, zoom = 1, A = null, rubberAt = null, mode2 = false;
+const view = {x: 0, y: 0}, pointers = new Map();
+const coarse = !!window.matchMedia?.('(pointer: coarse)').matches, app = document.querySelector('.app');
+let full = false, sheetMin = false, focusW = new Set(), dimOn = false;  // view — мировые координаты левого верхнего угла поля
+let undo = [], redo = [], editing = false;
+
+// flip: клеммы переносятся на противоположную сторону (входы автомата снизу и т. п.)
+// swap: фаза и ноль меняются местами слева направо; у счётчика пары 1–2 и 3–4 сохраняют порядок
+const CAN_SWAP = {supply: 1, br2: 1, meter: 1, load: 1};
+const swapX = (c, x) => c.type === 'meter' ? (x < 75 ? x + 70 : x - 70) : T[c.type].w(c) - x;
+const terms = c => {
+  let ts = T[c.type].terms(c);
+  if (c.flip) { const h = T[c.type].h(c); ts = ts.map(t => ({...t, y: h - t.y, s: -t.s})); }
+  if (c.swap && CAN_SWAP[c.type]) ts = ts.map(t => ({...t, x: swapX(c, t.x)}));
+  return ts;
+};
+const cw = c => T[c.type].w(c), chh = c => T[c.type].h(c);
+const tk = (c, k) => c.id + ':' + k;
+const comp = id => S.comps.find(c => c.id === id);
+const isBr = c => c.type === 'br1' || c.type === 'br2' || c.type === 'fuse';
+const snap = v => Math.round(v / GRID) * GRID;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[ch]));
+const fmt = (v, d = 1) => (+v || 0).toLocaleString('ru-RU', {minimumFractionDigits: d, maximumFractionDigits: d});
+const trunc = (s, n) => s.length > n ? s.slice(0, n - 1) + '…' : s;
+const plural = (n, a, b, c) => { const m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : m >= 2 && m <= 4 && (h < 12 || h > 14) ? b : c; };
+const uid = p => p + (S.seq++);
+
+function getTerm(key) {
+  const i = key.indexOf(':'), c = comp(key.slice(0, i));
+  if (!c) return null;
+  const t = terms(c).find(t => t.k === key.slice(i + 1));
+  return t ? {c, t, x: c.x + t.x, y: c.y + t.y, s: t.s, r: t.r} : null;
+}
+
+/* ---------- состояние ---------- */
+function example() {
+  const c = (id, type, x, y, o) => ({id, type, x, y, ...o});
+  const comps = [
+    c('c1', 'supply', 40, 40, {name: 'Ввод', allowKw: 10}),
+    c('c2', 'br2', 70, 190, {name: 'QF1', rating: 40, curve: 'C', on: true}),
+    c('c3', 'meter', 220, 180, {name: 'PI1'}),
+    c('c4', 'load', 230, 400, {name: 'Квартира', kind: 'flat', kw: 7}),
+  ];
+  const wires = [
+    ['c1:L', 'c2:Lin', 'L', 10], ['c1:N', 'c2:Nin', 'N', 10],
+    ['c2:Lout', 'c3:1', 'L', 10], ['c2:Nout', 'c3:3', 'N', 10],
+    ['c3:2', 'c4:L', 'L', 10], ['c3:4', 'c4:N', 'N', 10],
+  ].map(([a, b, kind, mm], i) => ({id: 'w' + (i + 1), a, b, kind, mm}));
+  return {comps, wires, seq: 100};
+}
+const valid = d => d && Array.isArray(d.comps) && Array.isArray(d.wires) && d.comps.every(c => T[c.type] && c.id) && d.wires.every(w => w.a && w.b);
+// Схема, с которой открывается страница, пока в браузере ничего не сохранено
+const MY_SCHEME = {"comps":[{"id":"c6","type":"supply","x":360,"y":-90,"name":"Ввод","allowKw":10,"swap":true},{"id":"c19","type":"load","x":140,"y":20,"name":"Кухня и спальня","kind":"flat","kw":7,"flip":true,"swap":true},{"id":"c20","type":"load","x":750,"y":-60,"name":"Зал","kind":"flat","kw":7,"swap":false,"flip":true},{"id":"c30","type":"load","x":590,"y":-60,"name":"Зал","kind":"flat","kw":7,"flip":true},{"id":"c33","type":"wago","x":710,"y":130,"name":"X5","n":2},{"id":"c36","type":"wago","x":710,"y":210,"name":"X6","n":2},{"id":"c47","type":"nbus","x":180,"y":660,"name":"Шина N","n":4,"flip":true},{"id":"c54","type":"fuse","x":570,"y":200,"name":"FU1","rating":16,"on":true},{"id":"c57","type":"fuse","x":250,"y":190,"name":"FU2","rating":16,"on":true},{"id":"c61","type":"meter","x":390,"y":640,"name":"PI1","model":"soviet","kwh":4217.3,"flip":true},{"id":"c71","type":"wago22","x":480,"y":210,"name":"X7","color":"blue","color2":"orange","split":"rows"},{"id":"c72","type":"wago22","x":340,"y":200,"name":"X8","color":"orange","color2":"blue","split":"rows"}],"wires":[{"id":"w35","a":"c33:t1","b":"c20:L","kind":"L","mm":10},{"id":"w37","a":"c36:t1","b":"c20:N","kind":"N","mm":10},{"id":"w51","a":"c19:N","b":"c47:t0","kind":"N","mm":10},{"id":"w55","a":"c54:in","b":"c30:L","kind":"L","mm":10},{"id":"w56","a":"c54:in","b":"c33:t0","kind":"L","mm":2.5},{"id":"w58","a":"c57:out","b":"c54:out","kind":"L","mm":10},{"id":"w60","a":"c57:in","b":"c19:L","kind":"L","mm":10},{"id":"w63","a":"c61:1","b":"c57:out","kind":"L","mm":10},{"id":"w68","a":"c61:3","b":"c47:t3","kind":"N","mm":10},{"id":"w69","a":"c47:t2","b":"c36:t0","kind":"N","mm":2.5},{"id":"w70","a":"c47:t1","b":"c30:N","kind":"N","mm":10},{"id":"w73","a":"c6:N","b":"c72:b1","kind":"N","mm":2.5},{"id":"w74","a":"c72:b0","b":"c61:4","kind":"N","mm":2.5},{"id":"w75","a":"c61:2","b":"c71:b1","kind":"L","mm":2.5},{"id":"w76","a":"c71:b0","b":"c6:L","kind":"L","mm":2.5}],"seq":77};
+function loadState() {
+  try { const d = JSON.parse(localStorage.getItem(KEY)); if (valid(d)) return d; } catch (e) {}
+  return JSON.parse(JSON.stringify(MY_SCHEME));
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function snapshot() { undo.push(JSON.stringify(S)); if (undo.length > 100) undo.shift(); redo = []; }
+function restore(json) { S = JSON.parse(json); if (sel && !selObj()) sel = null; pending = null; save(); renderInspector(); render(); }
+function doUndo() { if (!undo.length) return; redo.push(JSON.stringify(S)); restore(undo.pop()); }
+function doRedo() { if (!redo.length) return; undo.push(JSON.stringify(S)); restore(redo.pop()); }
+function selObj() { if (!sel) return null; return sel.kind === 'comp' ? comp(sel.id) : S.wires.find(w => w.id === sel.id); }
+
+/* ---------- расчёт: где фаза, где ноль, какие токи ---------- */
+function analyze() {
+  const comps = S.comps, par = new Map();
+  const find = k => { if (!par.has(k)) return k; let r = k; while (par.get(r) !== r) r = par.get(r); return r; };
+  const uni = (a, b) => { a = find(a); b = find(b); if (a !== b) par.set(a, b); };
+  for (const c of comps) { for (const t of terms(c)) par.set(tk(c, t.k), tk(c, t.k)); if (c.type === 'nbus' || isWago(c)) par.set(tk(c, 'hub'), tk(c, 'hub')); }
+  for (const w of S.wires) if (par.has(w.a) && par.has(w.b)) uni(w.a, w.b);
+
+  // Ветви внутри аппаратов: контакты автоматов, токовые цепи счётчика, шина
+  const edges = [];
+  const E = (c, a, b, pole, closed) => {
+    const e = {c, pole, closed, a: find(tk(c, a)), b: find(tk(c, b))};
+    edges.push(e);
+  };
+  for (const c of comps) {
+    if (c.type === 'br1' || c.type === 'fuse') E(c, 'in', 'out', 'L', c.on);
+    if (c.type === 'br2') { E(c, 'Lin', 'Lout', 'L', c.on); E(c, 'Nin', 'Nout', 'N', c.on); }
+    if (c.type === 'meter') { E(c, '1', '2', 'L', true); E(c, '3', '4', 'N', true); }
+    if (c.type === 'nbus' || isWago(c)) terms(c).forEach(t => edges.push({c, pole: 'bus', closed: true, a: find(tk(c, t.k)), b: find(tk(c, 'hub'))}));
+  }
+  const adj = new Map();
+  for (const e of edges) for (const n of [e.a, e.b]) { if (!adj.has(n)) adj.set(n, []); adj.get(n).push(e); }
+  const bfs = (starts, all) => {
+    const m = new Map(), q = [];
+    for (const s of starts) if (!m.has(s)) { m.set(s, {prev: null}); q.push(s); }
+    while (q.length) {
+      const n = q.shift();
+      for (const e of adj.get(n) || []) {
+        if (!e.closed && !all) continue;
+        const o = e.a === n ? e.b : e.a;
+        if (o === n || m.has(o)) continue;
+        m.set(o, {prev: n, e}); q.push(o);
+      }
+    }
+    return m;
+  };
+  const walk = (m, start, fn) => { let n = start; const seen = new Set(); while (n != null && m.has(n) && !seen.has(n)) { seen.add(n); const r = m.get(n); fn(n, r); n = r.prev; } };
+  const net = (c, k) => find(tk(c, k));
+
+  const sup = comps.filter(c => c.type === 'supply'), meters = comps.filter(c => c.type === 'meter');
+  const Ls = sup.map(c => net(c, 'L')), Ns = sup.map(c => net(c, 'N'));
+  const L = bfs(Ls), N = bfs(Ns), L2 = bfs(Ls, true), N2 = bfs(Ns, true);
+  const fault = Ns.some(n => L.has(n));
+
+  // Какой автомат защищает каждый участок фазы (ближайший со стороны ввода)
+  const prot = new Map();
+  for (const [n, r] of L2) prot.set(n, r.prev == null ? null : (isBr(r.e.c) ? r.e.c : prot.get(r.prev)));
+
+  const poleI = new Map(), netI = new Map(), loadSt = new Map();
+  const addI = (m, k, v) => m.set(k, (m.get(k) || 0) + v);
+  let totalI = 0;
+  for (const c of comps) {
+    if (c.type !== 'load') continue;
+    const lN = net(c, 'L'), nN = net(c, 'N'), I = (+c.kw || 0) * 1000 / U;
+    let ph = null, ne = null, swapped = false;
+    if (!fault) {
+      if (L.has(lN) && N.has(nN)) { ph = lN; ne = nN; }
+      else if (L.has(nN) && N.has(lN)) { ph = nN; ne = lN; swapped = true; }
+    }
+    const st = {powered: !!ph, swapped, I: ph ? I : 0, meter: false, br: null, reason: ''};
+    if (ph) {
+      totalI += I;
+      walk(L, ph, (n, r) => { addI(netI, n, I); if (r.e) { addI(poleI, r.e.c.id + r.e.pole, I); if (r.e.c.type === 'meter') st.meter = true; if (isBr(r.e.c) && !st.br) st.br = r.e.c; } });
+      walk(N, ne, (n, r) => { addI(netI, n, I); if (r.e) addI(poleI, r.e.c.id + r.e.pole, I); });
+    } else if (fault) {
+      st.reason = 'короткое замыкание в схеме';
+    } else {
+      const why = (m, m2, n, role) => {
+        if (m.has(n)) return null;
+        if (role === 'N' && L2.has(n)) return 'на клемме N фаза';
+        if (!m2.has(n)) return role === 'L' ? 'не подключена фаза' : 'не подключён ноль';
+        const off = new Set(); walk(m2, n, (x, r) => { if (r.e && !r.e.closed) off.add(r.e.c.name); });
+        return off.size ? 'выключен ' + [...off].join(', ') : null;
+      };
+      st.reason = [...new Set([why(L, L2, lN, 'L'), why(N, N2, nN, 'N')].filter(Boolean))].join(', ') || 'нет цепи до ввода';
+    }
+    loadSt.set(c.id, st);
+  }
+
+  const compI = new Map(), wagoI = new Map();
+  for (const c of comps) {
+    if (isBr(c)) compI.set(c.id, Math.max(poleI.get(c.id + 'L') || 0, poleI.get(c.id + 'N') || 0));
+    if (isWago(c)) wagoI.set(c.id, Math.max(0, ...terms(c).map(t => netI.get(net(c, t.k)) || 0)));
+  }
+  const meterKw = new Map(meters.map(m => [m.id, (poleI.get(m.id + 'L') || 0) * U / 1000]));
+  return {find, L, N, L2, fault, netI, compI, meterKw, wagoI, loadSt, totalI, totalKw: totalI * U / 1000, prot, sup: sup[0]};
+}
+
+/* ---------- отрисовка ---------- */
+function route(a, b, lane) {
+  const st = 18, a1 = {x: a.x, y: a.y + a.s * st}, b1 = {x: b.x, y: b.y + b.s * st};
+  // Точка соединения: у неё нет стороны, провод подходит к ней уголком
+  if (!a.s || !b.s) {
+    if (!a.s && !b.s) return [a, {x: b.x, y: a.y}, b];
+    const [p, q, p1] = a.s ? [a, b, a1] : [b, a, b1];
+    const pts = (q.y - p1.y) * p.s >= 0 ? [p, {x: p.x, y: q.y}, q] : [p, p1, {x: q.x, y: p1.y}, q];
+    return a.s ? pts : pts.reverse();
+  }
+  if (a.s === b.s) {
+    const y = a.s > 0 ? Math.max(a1.y, b1.y) + lane : Math.min(a1.y, b1.y) - lane;
+    return [a, {x: a.x, y}, {x: b.x, y}, b];
+  }
+  const [dn, up] = a.s > 0 ? [a1, b1] : [b1, a1];
+  if (dn.y <= up.y) { const y = (dn.y + up.y) / 2 + lane - 4; return [a, {x: a.x, y}, {x: b.x, y}, b]; }
+  const x = (a.x + b.x) / 2 + lane;
+  return [a, a1, {x, y: a1.y}, {x, y: b1.y}, b1, b];
+}
+const pathD = pts => pts.map((p, i) => (i ? 'L' : 'M') + p.x + ' ' + p.y).join(' ');
+
+function icon(kind) {
+  switch (kind) {
+    case 'flat': return '<path class="i-st" d="M2.5 13.5L14 3l11.5 10.5M5.5 11v15h17V11"/><rect class="i-st i-glow" x="9" y="14" width="10" height="7" rx="1"/>';
+    case 'light': return '<path class="i-st i-glow" d="M14 2.5a8.5 8.5 0 0 0-5 15.3V21h10v-3.2A8.5 8.5 0 0 0 14 2.5z"/><path class="i-st" d="M10 24.5h8"/>';
+    case 'stove': return '<rect class="i-st" x="2" y="2" width="24" height="24" rx="3"/><circle class="i-st i-glow" cx="9" cy="9" r="3.6"/><circle class="i-st i-glow" cx="19" cy="9" r="3.6"/><circle class="i-st i-glow" cx="9" cy="19" r="3.6"/><circle class="i-st i-glow" cx="19" cy="19" r="3.6"/>';
+    case 'heater': return '<rect class="i-st i-glow" x="7" y="1.5" width="14" height="25" rx="6"/><path class="i-st" d="M10 17c1.4-2 2.6-2 4 0s2.6 2 4 0"/>';
+    default: return '<circle class="i-st" cx="14" cy="14" r="12"/><circle class="i-f" cx="9.5" cy="14" r="2"/><circle class="i-f" cx="18.5" cy="14" r="2"/>';
+  }
+}
+
+function compBody(c) {
+  const w = cw(c), h = chh(c), f = !!c.flip, sx = x => c.swap ? swapX(c, x) : x;
+  switch (c.type) {
+    case 'supply': { const dy = f ? 14 : 0;
+      return `<rect class="sup" width="${w}" height="${h}" rx="5"/>
+      <text class="sup-t" x="12" y="${22 + dy}">${esc(trunc(c.name, 14))} · 230 В</text>
+      <text class="sup-s" x="12" y="${38 + dy}">от этажного щита</text>
+      <text class="sup-s" x="12" y="${52 + dy}">разрешено ${fmt(c.allowKw)} кВт</text>
+      <text class="sup-l" x="${sx(50)}" y="${f ? 18 : 70}">L</text><text class="sup-l" x="${sx(110)}" y="${f ? 18 : 70}">N</text>`; }
+    case 'br1': case 'br2': {
+      const cx = w / 2, lw = c.type === 'br2' ? 32 : 12;
+      return `<rect class="mod" width="${w}" height="${h}" rx="3"/>
+        <rect class="mod-term" x="2" y="2" width="${w - 4}" height="12" rx="2"/>
+        <rect class="mod-term" x="2" y="${h - 14}" width="${w - 4}" height="12" rx="2"/>
+        <text class="m-name" x="${cx}" y="26">${esc(trunc(c.name, c.type === 'br2' ? 12 : 6))}</text>
+        <text class="m-rate" x="${cx}" y="39">${c.curve}${c.rating}</text>
+        <g class="lever ${c.on ? 'on' : 'off'}" data-act="toggle"><title>${c.on ? 'Включён — нажмите, чтобы выключить' : 'Выключен — нажмите, чтобы включить'}</title>
+          <rect x="${cx - lw / 2 - 6}" y="43" width="${lw + 12}" height="32" fill="transparent"/>
+          <rect class="lv-slot" x="${cx - lw / 2}" y="46" width="${lw}" height="26" rx="2"/>
+          <rect class="lv-knob" x="${cx - lw / 2 + 2}" y="${c.on ? 48 : 59}" width="${lw - 4}" height="11" rx="1.5"/></g>
+        <rect class="flag ${c.on ? 'on' : 'off'}" x="${cx - 6}" y="76" width="12" height="5" rx="1"><title>Флажок: красный — контакты замкнуты, зелёный — разомкнуты</title></rect>`;
+    }
+    case 'fuse': {
+      const cx = w / 2;
+      return `<rect class="fz-base" width="${w}" height="${h}" rx="5"/>
+        <rect class="fz-term" x="4" y="3" width="${w - 8}" height="11" rx="2"/>
+        <rect class="fz-term" x="4" y="${h - 14}" width="${w - 8}" height="11" rx="2"/>
+        <text class="fz-name" x="${cx}" y="25">${esc(trunc(c.name, 7))}</text>
+        <circle class="fz-cap" cx="${cx}" cy="56" r="22"/><circle class="fz-rib" cx="${cx}" cy="56" r="20.5"/>
+        <text class="fz-model" x="${cx}" y="48">ПАР-${c.rating}</text>
+        <g class="lever ${c.on ? 'on' : 'off'}" data-act="toggle"><title>${c.on ? 'Включена — нажмите красную кнопку, чтобы выбить' : 'Выбита — нажмите красную кнопку, чтобы включить'}</title>
+          <circle cx="${cx}" cy="59" r="12" fill="transparent"/>
+          ${c.on ? '' : `<circle class="fz-out" cx="${cx}" cy="59" r="10.5"/>`}<circle class="fz-red" cx="${cx}" cy="59" r="${c.on ? 6.5 : 8.5}"/></g>
+        <circle class="fz-black" cx="${cx + 13}" cy="70" r="3"><title>Чёрная кнопка отключения</title></circle>`;
+    }
+    case 'meter': {
+      const kw = A.meterKw.get(c.id) || 0, dy = f ? 36 : 0, cy = f ? -76 : 0;
+      if (c.model === 'soviet') {
+        const spin = kw > 0 ? clamp(6 / kw, 0.3, 60) : 0;  // 600 об/кВт·ч: период оборота диска 6/P секунд
+        return `<rect class="sov" width="${w}" height="${h}" rx="8"/>
+        <text class="sov-t" x="12" y="${15 + dy}">${esc(trunc(c.name, 6))} · СО-И446</text>
+        <text class="sov-s" x="139" y="${15 + dy}">${fmt(kw, 2)} кВт</text>
+        <rect class="sov-glass" x="10" y="${21 + dy}" width="130" height="55" rx="5"/>
+        <g id="drum-${c.id}" transform="translate(0,${dy})">${drumSvg(c)}</g>
+        <svg x="20" y="${50 + dy}" width="110" height="8"><rect class="sov-disk" width="110" height="8" rx="4"/><rect class="sov-mark ${spin ? 'spin' : ''}" x="-12" width="10" height="8"${spin ? ` style="animation-duration:${spin.toFixed(2)}s"` : ''}/></svg>
+        <text class="sov-fine" x="75" y="${70 + dy}" text-anchor="middle">600 об/кВт·ч · 10–40 А</text>
+        <rect class="sov-cover" x="6" y="${82 + cy}" width="138" height="32" rx="3"/>
+        <text class="sov-n" x="${sx(40)}" y="${f ? 32 : 94}" style="font-size:9px">L</text><text class="sov-n" x="${sx(110)}" y="${f ? 32 : 94}" style="font-size:9px">N</text>
+        ${terms(c).map(t => `<text class="sov-n" x="${t.x}" y="${f ? 20 : 107}">${t.k}</text>`).join('')}`;
+      }
+      return `<rect class="mtr" width="${w}" height="${h}" rx="6"/>
+        <text class="m-name l" x="12" y="${16 + dy}">${esc(trunc(c.name, 8))} · счётчик</text>
+        <rect class="lcd" x="12" y="${22 + dy}" width="126" height="36" rx="3"/>
+        <text class="lcd-big" x="131" y="${41 + dy}">${fmt(kw, 2)} кВт</text>
+        <text class="lcd-sm" x="131" y="${53 + dy}">${fmt(kw * 1000 / U, 1)} А · 230 В</text>
+        <circle class="led ${kw > 0 ? 'blink' : ''}" cx="20" cy="${70 + dy}" r="3"/>
+        <text class="mtr-s" x="28" y="${73 + dy}">3200 imp/kWh</text>
+        <rect class="mtr-cover" x="6" y="${82 + cy}" width="138" height="32" rx="3"/>
+        <text class="mtr-s" x="${sx(40)}" y="${f ? 32 : 94}" text-anchor="middle">L</text><text class="mtr-s" x="${sx(110)}" y="${f ? 32 : 94}" text-anchor="middle">N</text>
+        ${terms(c).map(t => `<text class="mtr-n" x="${t.x}" y="${f ? 20 : 107}">${t.k}</text>`).join('')}`;
+    }
+    case 'nbus': return `<text class="m-name l" x="0" y="${f ? h + 14 : -6}">${esc(c.name)}</text>
+      <rect class="bus-base" width="${w}" height="${h}" rx="3"/>
+      <rect class="brass" x="6" y="7" width="${w - 12}" height="9" rx="1.5"/>
+      ${terms(c).map(t => `<circle class="screw" cx="${t.x}" cy="11.5" r="2.6"/>`).join('')}`;
+    case 'node': return `<circle class="node-body" cx="14" cy="14" r="13"><title>${esc(c.name)}: тяните за край, чтобы передвинуть</title></circle>`;
+    case 'wago22': return `<text class="m-name l" x="${w + 6}" y="20">${esc(c.name)}</text><text class="mtr-s" x="${w + 6}" y="31">2×2</text>
+      <rect class="wago-body" width="${w}" height="${h}" rx="4"/>
+      ${terms(c).map((t, i) => `<rect class="wago-lever" x="${t.x - 7}" y="${t.s < 0 ? 4 : 28}" width="14" height="12" rx="2"${lever22(c, t, i)}/>`).join('')}
+      <rect class="wago-hole" x="8" y="19.5" width="36" height="5" rx="2"/>`;
+    case 'wago': return `<text class="m-name l" x="0" y="${f ? h + 13 : -17}">${esc(c.name)}</text><text class="mtr-s" x="0" y="${f ? h + 23 : -7}">${wagoModel(c.n)}</text>
+      <rect class="wago-body" width="${w}" height="${h}" rx="4"/>
+      ${terms(c).map((t, i) => `<rect class="wago-lever" x="${t.x - 7}" y="${f ? 19 : 3}" width="14" height="12" rx="2"${leverStyle(c, i)}/><rect class="wago-hole" x="${t.x - 4}" y="${f ? 9 : 18}" width="8" height="7" rx="1.5"/>`).join('')}`;
+    case 'load': {
+      const st = A.loadSt.get(c.id) || {};
+      return `<rect class="load ${st.powered ? 'on' : ''}" width="${w}" height="${h}" rx="8"/>
+        <text class="t-lbl" x="${sx(45)}" y="${f ? 62 : 17}">L</text><text class="t-lbl" x="${sx(85)}" y="${f ? 62 : 17}">N</text>
+        <g class="ico ${st.powered ? 'on' : ''}" transform="translate(12,${f ? 12 : 32})">${icon(c.kind)}</g>
+        <text class="ld-name" x="48" y="${f ? 26 : 46}">${esc(trunc(c.name, 14))}</text>
+        <text class="ld-sub" x="48" y="${f ? 41 : 61}">${fmt(c.kw)} кВт${st.powered ? ' · ' + fmt(st.I) + ' А' : ' · выкл'}</text>`;
+    }
+  }
+  return '';
+}
+
+function clean(pts) {
+  const r = [];
+  for (const p of pts) { const l = r[r.length - 1]; if (!l || l.x !== p.x || l.y !== p.y) r.push({x: p.x, y: p.y}); }
+  for (let i = r.length - 2; i > 0; i--) { const a = r[i - 1], b = r[i], c = r[i + 1]; if ((a.x === b.x && b.x === c.x) || (a.y === b.y && b.y === c.y)) r.splice(i, 1); }
+  return r;
+}
+// Сдвиг ломаной из горизонтальных и вертикальных отрезков вбок на o — так жилы идут параллельно внутри оболочки
+function offsetPoly(pts, o) {
+  const n = [];
+  for (let i = 0; i < pts.length - 1; i++) n.push({x: -Math.sign(pts[i + 1].y - pts[i].y), y: Math.sign(pts[i + 1].x - pts[i].x)});
+  return pts.map((p, i) => {
+    const a = n[i - 1], b = n[i];
+    const v = !a ? b : !b ? a : (a.x === b.x && a.y === b.y) ? a : {x: a.x + b.x, y: a.y + b.y};
+    return {x: p.x + o * v.x, y: p.y + o * v.y};
+  });
+}
+function wireState(w) {
+  const n = A.find(w.a), I = A.netI.get(n) || 0;
+  const fault = A.fault && A.L.has(n) && A.N.has(n), live = !A.fault && (A.L.has(n) || A.N.has(n));
+  return {cls: fault ? 'fault' : live ? 'live' : 'dead', flow: I > 0 && !fault};
+}
+function cableSvg(ws, i) {
+  const [w1, w2] = ws, t = [w1.a, w1.b, w2.a, w2.b].map(getTerm);
+  if (t.some(x => !x)) return '';
+  const [a1, b1, a2, b2] = t, R = 26;
+  const end = (p, q) => ({x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 + p.s * R, s: p.s});
+  const A0 = end(a1, a2), B0 = end(b1, b2);
+  let spine = clean(route(A0, B0, (i % 3) * 4));
+  if (spine.length < 2) spine = [A0, {x: B0.x + 0.01, y: B0.y}];
+  const n0 = {x: -Math.sign(spine[1].y - spine[0].y), y: Math.sign(spine[1].x - spine[0].x)};
+  const sg = Math.sign((a1.x - A0.x) * n0.x + (a1.y - A0.y) * n0.y) || 1;
+  const sd = pathD(spine), s = ws.some(w => focusW.has(w.id));
+  let h = `<g class="wire cable ${dimOn && !s ? 'dim' : ''}" data-wire="${w1.id}"><path class="hit" d="${sd}" style="stroke-width:20px"/>${s ? `<path class="halo" d="${sd}" style="stroke-width:24px"/>` : ''}<path class="sheath-edge" d="${sd}"/><path class="sheath" d="${sd}"/>`;
+  for (const [w, ta, tb, o] of [[w1, a1, b1, sg * 3.2], [w2, a2, b2, -sg * 3.2]]) {
+    const st = wireState(w), d = pathD([ta, {x: ta.x, y: ta.y + ta.s * 8}, ...offsetPoly(spine, o), {x: tb.x, y: tb.y + tb.s * 8}, tb]);
+    h += `<g class="wire ${w.kind} ${st.cls}"><path class="hit" d="${d}"/><path class="core" d="${d}" style="stroke-width:2.6px"/>${st.flow ? `<path class="flow" d="${d}" style="stroke-width:1.3px"/>` : ''}</g>`;
+  }
+  return h + '</g>';
+}
+
+const sessionKwh = new Map();
+function drumSvg(c) {
+  const v = Math.max(0, (+c.kwh || 4217.3) + (sessionKwh.get(c.id) || 0));
+  const d = (Math.floor(v * 10) % 1000000).toString().padStart(6, '0');
+  return [...d].map((ch, i) => `<rect class="sov-cell ${i === 5 ? 'red' : ''}" x="${24 + i * 17.5}" y="26" width="15.5" height="19" rx="1.5"/><text class="sov-dig" x="${31.75 + i * 17.5}" y="40.5">${ch}</text>`).join('');
+}
+setInterval(() => {
+  if (!A || document.hidden) return;
+  for (const c of S.comps) {
+    if (c.type !== 'meter' || c.model !== 'soviet') continue;
+    const kw = A.meterKw.get(c.id) || 0; if (!kw) continue;
+    sessionKwh.set(c.id, (sessionKwh.get(c.id) || 0) + kw / 3600);
+    const g = document.getElementById('drum-' + c.id); if (g) g.innerHTML = drumSvg(c);
+  }
+}, 1000);
+
+function render() {
+  A = analyze();
+  const connected = new Set(S.wires.flatMap(w => [w.a, w.b]));
+  const cables = new Map(), pendMate = mode2 && pending ? partner(pending) : null;
+  for (const w of S.wires) if (w.cable) { if (!cables.has(w.cable)) cables.set(w.cable, []); cables.get(w.cable).push(w); }
+  let out = '<defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle class="dot" cx="10" cy="10" r="1.1"/></pattern></defs>';
+  out += '<rect id="gridbg" fill="url(#dots)"/>';
+  // Подсветка: выделенный провод (кабель целиком) или все провода выделенного элемента; остальное приглушено
+  const so = selObj(), focusC = new Set(), ends = w => { focusC.add(w.a.split(':')[0]); focusC.add(w.b.split(':')[0]); };
+  focusW = new Set(); dimOn = !!so;
+  if (so && sel.kind === 'wire') cableOf(so).forEach(w => { focusW.add(w.id); ends(w); });
+  if (so && sel.kind === 'comp') { focusC.add(so.id); for (const w of S.wires) if (w.a.startsWith(so.id + ':') || w.b.startsWith(so.id + ':')) { focusW.add(w.id); ends(w); } }
+  const dimC = c => dimOn && !focusC.has(c.id) ? 'dim' : '';
+  for (const c of S.comps) {
+    const s = sel && sel.kind === 'comp' && sel.id === c.id;
+    out += `<g class="comp ${dimC(c)}" data-comp="${c.id}" transform="translate(${c.x},${c.y})">${s ? `<rect class="sel-ring" x="-5" y="-5" width="${cw(c) + 10}" height="${chh(c) + 10}" rx="7"/>` : ''}${compBody(c)}</g>`;
+  }
+  S.wires.forEach((w, i) => {
+    const cab = w.cable && cables.get(w.cable);
+    if (cab && cab.length === 2) { if (cab[0] === w) out += cableSvg(cab, i); return; }
+    const a = getTerm(w.a), b = getTerm(w.b);
+    if (!a || !b) return;
+    const d = pathD(route(a, b, (w.kind === 'N' ? 6 : 0) + (i % 3) * 4));
+    const n = A.find(w.a), sw = 3.2;
+    const fault = A.fault && A.L.has(n) && A.N.has(n);
+    const live = !A.fault && (A.L.has(n) || A.N.has(n));
+    const I = A.netI.get(n) || 0, s = focusW.has(w.id);
+    out += `<g class="wire ${w.kind} ${fault ? 'fault' : live ? 'live' : 'dead'} ${dimOn && !s ? 'dim' : ''}" data-wire="${w.id}">
+      <path class="hit" d="${d}"/>${s ? `<path class="halo" d="${d}" style="stroke-width:${sw + 9}px"/>` : ''}
+      <path class="core" d="${d}" style="stroke-width:${sw}px"/>${I > 0 && !fault ? `<path class="flow" d="${d}" style="stroke-width:${Math.max(1.4, sw - 2.4)}px"/>` : ''}</g>`;
+  });
+  for (const c of S.comps) for (const t of terms(c)) {
+    const key = tk(c, t.k), x = c.x + t.x, y = c.y + t.y;
+    out += `<g class="term ${t.r} ${c.type === 'node' ? 'node' : ''} ${dimC(c)} ${pending === key || pendMate === key ? 'pending' : ''}" data-term="${key}" transform="translate(${x},${y})"><title>${esc(c.name)}: ${t.tip}</title>
+      <circle class="t-hit" r="${c.type === 'node' ? (coarse ? 9 : 7) : (coarse ? 16 : 11)}"/><circle class="t-ring" r="5.5"/>${connected.has(key) ? '<path class="t-slot" d="M-2.8 -2.8L2.8 2.8"/>' : '<path class="t-slot" d="M-3 0H3"/>'}</g>`;
+  }
+  out += '<path id="rubber" class="rubber" d=""/>';
+  svg.innerHTML = out;
+  applyView();
+  if (pending && rubberAt) updateRubber(rubberAt);
+  renderStats(); updateReadout(); updateHint();
+  $('#b-undo').disabled = !undo.length; $('#b-redo').disabled = !redo.length;
+}
+
+function updateRubber(p) {
+  rubberAt = p;
+  const r = document.getElementById('rubber'), a = pending && getTerm(pending);
+  if (!r) return;
+  r.setAttribute('d', a ? `M${a.x} ${a.y}L${a.x} ${a.y + a.s * 14}L${p.x} ${p.y}` : '');
+}
+
+function renderStats() {
+  $('#stats').innerHTML = `
+    <div class="stat"><span>Нагрузка</span><b>${fmt(A.totalKw)} <small>кВт</small></b></div>
+    <div class="stat"><span>Ток</span><b>${fmt(A.totalI)} <small>А</small></b></div>
+    <div class="stat"><span>Разрешено</span><b>${A.sup ? fmt(A.sup.allowKw) : '—'} <small>кВт</small></b></div>`;
+}
+
+
+function updateHint() {
+  const h = $('#hint');
+  h.classList.toggle('active', !!pending);
+  h.textContent = pending
+    ? (mode2 ? 'Выберите клемму L или N на другом элементе, вторая жила встанет сама. Esc — отмена.' : 'Выберите вторую клемму. Esc — отмена.')
+    : (mode2 ? 'Двухжильный провод: от клеммы L или N, вторая жила подключится к соседней.' : coarse ? 'Коснитесь клеммы, потом второй — будет провод. Двумя пальцами — масштаб.' : 'Тяните провод от клеммы к клемме. Пустое место — двигать поле, Ctrl + колесо — масштаб.');
+}
+
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); }
+
+/* ---------- панель параметров ---------- */
+const ro = (k, v) => `<div class="ro"><span>${k}</span><b>${v}</b></div>`;
+const bar = (v, max) => { const p = max ? v / max * 100 : 0; return `<div class="bar"><i class="${p > 100 ? 'over' : p > 85 ? 'high' : ''}" style="width:${Math.min(100, p)}%"></i></div>`; };
+
+function updateReadout() {
+  const box = document.getElementById('readout'); if (!box || !A) return;
+  let o = selObj();
+  if (!o) return;
+  if (sel.kind === 'wire') {
+    if (o.cable) o = cableOf(o).find(w => w.kind === 'L') || o;
+    const n = A.find(o.a), I = A.netI.get(n) || 0, p = A.L2.has(n) ? A.prot.get(n) : null;
+    box.innerHTML = ro('Ток', `≈ ${fmt(I)} А`) + bar(I, CAP[o.mm]) + ro('Допустимо', `до ${CAP[o.mm]} А`) + ro('Защита', p ? `${p.name} ${rateLabel(p)}` : '—');
+    return;
+  }
+  const c = o;
+  if (isBr(c)) { const I = A.compI.get(c.id) || 0; box.innerHTML = ro('Состояние', c.on ? 'включён' : 'выключен') + ro('Ток', `${fmt(I)} из ${c.rating} А`) + bar(I, c.rating); }
+  else if (c.type === 'load') { const st = A.loadSt.get(c.id); if (!st) return; box.innerHTML = ro('Питание', st.powered ? 'есть' : 'нет') + (st.powered ? ro('Ток', fmt(st.I) + ' А') + ro('Защита', st.br ? `${st.br.name} ${rateLabel(st.br)}` : '—') : `<div class="ro"><span>${esc(st.reason)}</span></div>`); }
+  else if (c.type === 'meter') { const kw = A.meterKw.get(c.id) || 0; box.innerHTML = ro('Мощность', fmt(kw, 2) + ' кВт') + ro('Ток', fmt(kw * 1000 / U) + ' А'); }
+  else if (c.type === 'supply') box.innerHTML = ro('Нагрузка', `${fmt(A.totalKw)} из ${fmt(c.allowKw)} кВт`) + bar(A.totalKw, c.allowKw) + ro('Ток', `${fmt(A.totalI)} из ${fmt(c.allowKw * 1000 / U)} А`);
+  else if (c.type === 'node') {
+    const k = tk(c, 'p'), n = S.wires.filter(w => w.a === k || w.b === k).length;
+    box.innerHTML = ro('Проводов', String(n)) + ro('Ток', `≈ ${fmt(A.netI.get(A.find(k)) || 0)} А`);
+  }
+  else if (c.type === 'nbus' || isWago(c)) {
+    const used = terms(c).filter(t => S.wires.some(w => w.a === tk(c, t.k) || w.b === tk(c, t.k))).length, I = A.wagoI.get(c.id) || 0;
+    box.innerHTML = (isWago(c) ? ro('Ток', `${fmt(I)} из ${WAGO_I} А`) + bar(I, WAGO_I) : '') + ro('Занято гнёзд', `${used} из ${terms(c).length}`);
+  }
+}
+
+function renderInspector() {
+  const box = $('#inspector'), o = selObj();
+  let h;
+  box.hidden = !o; box.classList.toggle('min', sheetMin); box.parentElement.classList.toggle('has-sheet', !!o);
+  if (!o) { box.innerHTML = ''; return; }
+  if (sel.kind === 'wire' && o.cable) {
+    h = `<div class="sh-head"><h3>Кабель 2×${fmt(o.mm, o.mm % 1 ? 1 : 0)}</h3><button class="btn icon" id="f-min" aria-label="${sheetMin ? 'Развернуть' : 'Свернуть'}">${sheetMin ? '▴' : '▾'}</button><button class="btn icon" id="f-close" aria-label="Снять выбор">×</button></div>
+      <p class="lead">Фаза и ноль в одной оболочке, как ВВГнг 2×${fmt(o.mm, o.mm % 1 ? 1 : 0)}.</p>
+      <label class="fld"><span>Сечение жил, мм², медь</span><select id="f-mm">${SECTIONS.map(s => `<option value="${s}" ${s === o.mm ? 'selected' : ''}>${fmt(s, s % 1 ? 1 : 0)}</option>`).join('')}</select></label>
+      <div class="readout" id="readout"></div>
+      <button class="btn" id="f-split">Разделить на две жилы</button>
+      <button class="btn danger" id="f-del">Удалить кабель</button>`;
+  } else if (sel.kind === 'wire') {
+    h = `<div class="sh-head"><h3>Провод</h3><button class="btn icon" id="f-min" aria-label="${sheetMin ? 'Развернуть' : 'Свернуть'}">${sheetMin ? '▴' : '▾'}</button><button class="btn icon" id="f-close" aria-label="Снять выбор">×</button></div>
+      <div class="seg" role="group" aria-label="Назначение провода">
+        <button id="f-wL" class="${o.kind === 'L' ? 'on' : ''}" aria-pressed="${o.kind === 'L'}"><i class="sw L"></i>Фаза L</button>
+        <button id="f-wN" class="${o.kind === 'N' ? 'on' : ''}" aria-pressed="${o.kind === 'N'}"><i class="sw N"></i>Ноль N</button>
+      </div>
+      <label class="fld"><span>Сечение, мм², медь</span><select id="f-mm">${SECTIONS.map(s => `<option value="${s}" ${s === o.mm ? 'selected' : ''}>${fmt(s, s % 1 ? 1 : 0)}</option>`).join('')}</select></label>
+      <div class="readout" id="readout"></div>
+      <button class="btn danger" id="f-del">Удалить провод</button>`;
+  } else {
+    const c = o;
+    h = `<div class="sh-head"><h3>${TITLE[c.type]}</h3><button class="btn icon" id="f-min" aria-label="${sheetMin ? 'Развернуть' : 'Свернуть'}">${sheetMin ? '▴' : '▾'}</button><button class="btn icon" id="f-close" aria-label="Снять выбор">×</button></div>
+      <label class="fld"><span>Обозначение</span><input id="f-name" value="${esc(c.name)}" maxlength="24" autocomplete="off"></label>`;
+    if (c.type !== 'node' && c.type !== 'wago22') {
+      const top = terms(c)[0].s < 0;
+      h += `<div class="fld"><span>${isBr(c) ? 'Вход' : 'Клеммы'} <kbd>F</kbd></span><div class="seg" role="group" aria-label="Сторона клемм">
+        <button id="f-top" class="${top ? 'on' : ''}" aria-pressed="${top}">Сверху</button>
+        <button id="f-bottom" class="${top ? '' : 'on'}" aria-pressed="${!top}">Снизу</button></div></div>`;
+    }
+    if (CAN_SWAP[c.type]) h += `<div class="fld"><span>Порядок клемм <kbd>S</kbd></span><div class="seg" role="group" aria-label="Порядок фазы и нуля">
+        <button id="f-ln" class="${c.swap ? '' : 'on'}" aria-pressed="${!c.swap}"><i class="sw L"></i>L · N</button>
+        <button id="f-nl" class="${c.swap ? 'on' : ''}" aria-pressed="${!!c.swap}"><i class="sw N"></i>N · L</button></div></div>`;
+    if (c.type === 'supply') h += `<label class="fld"><span>Разрешённая мощность, кВт</span><input id="f-allow" type="number" min="1" max="50" step="0.5" value="${c.allowKw}"></label>`;
+    if (c.type === 'fuse') h += `<label class="fld"><span>Номинал, А</span><select id="f-rating">${FUSE_RATINGS.map(r => `<option value="${r}" ${r === c.rating ? 'selected' : ''}>ПАР-${r} · ${r} А</option>`).join('')}</select></label>
+      <button class="btn ${c.on ? '' : 'primary'}" id="f-on">${c.on ? 'Выбить' : 'Включить'}</button>`;
+    if (c.type === 'meter') h += `<label class="fld"><span>Вид</span><select id="f-model"><option value="">Электронный</option><option value="soviet" ${c.model === 'soviet' ? 'selected' : ''}>Советский СО-И446</option></select></label>`;
+    if (c.type === 'wago22') {
+      const opts = sel => Object.entries(WAGO_COLORS).map(([k, [v]]) => `<option value="${k}" ${k === sel ? 'selected' : ''}>${v}</option>`).join('');
+      const c1 = c.color2 && c.color !== 'mix' ? c.color : 'orange', c2 = c.color2 || 'blue', cols = c.split === 'cols';
+      h += `<div class="row2"><label class="fld"><span>${cols ? 'Слева' : 'Сверху'}</span><select id="f-c1">${opts(c1)}</select></label>
+        <label class="fld"><span>${cols ? 'Справа' : 'Снизу'}</span><select id="f-c2">${opts(c2)}</select></label></div>
+        <div class="fld"><span>Раскраска</span><div class="seg" role="group" aria-label="Как делить цвета">
+        <button id="f-rows" class="${cols ? '' : 'on'}" aria-pressed="${!cols}">Верх и низ</button>
+        <button id="f-cols" class="${cols ? 'on' : ''}" aria-pressed="${cols}">Лево и право</button></div></div>`;
+    }
+    if (c.type === 'wago') h += `<label class="fld"><span>Цвет рычажков</span><select id="f-color"><option value="mix" ${c.color === 'mix' ? 'selected' : ''}>Разноцветные</option>${Object.entries(WAGO_COLORS).map(([k, [v]]) => `<option value="${k}" ${k === (c.color || 'orange') ? 'selected' : ''}>${v}</option>`).join('')}</select></label>`;
+    if (isBr(c) && c.type !== 'fuse') h += `<div class="row2">
+        <label class="fld"><span>Номинал, А</span><select id="f-rating">${RATINGS.map(r => `<option ${r === c.rating ? 'selected' : ''}>${r}</option>`).join('')}</select></label>
+        <label class="fld"><span>Характеристика</span><select id="f-curve">${['B', 'C', 'D'].map(r => `<option ${r === c.curve ? 'selected' : ''}>${r}</option>`).join('')}</select></label></div>
+      <button class="btn ${c.on ? '' : 'primary'}" id="f-on">${c.on ? 'Выключить' : 'Включить'}</button>`;
+    if (c.type === 'nbus') h += `<label class="fld"><span>Клемм на шине</span><select id="f-n">${Array.from({length: 10}, (_, i) => i + 3).map(n => `<option ${n === c.n ? 'selected' : ''}>${n}</option>`).join('')}</select></label>`;
+    if (c.type === 'wago') h += `<label class="fld"><span>Модель</span><select id="f-n">${[2, 3, 4, 5].map(n => `<option value="${n}" ${n === c.n ? 'selected' : ''}>${n === 4 ? '' : wagoModel(n) + ' · '}${n} ${plural(n, 'гнездо', 'гнезда', 'гнёзд')}</option>`).join('')}</select></label>`;
+    if (c.type === 'load') h += `<div class="row2">
+        <label class="fld"><span>Тип</span><select id="f-kind">${Object.entries(KINDS).map(([k, v]) => `<option value="${k}" ${k === c.kind ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+        <label class="fld"><span>Мощность, кВт</span><input id="f-kw" type="number" min="0" max="30" step="0.1" value="${c.kw}"></label></div>`;
+    h += `<div class="readout" id="readout"></div><button class="btn danger" id="f-del">Удалить</button>`;
+  }
+  box.innerHTML = h;
+  const on = (id, ev, fn) => { const el = document.getElementById(id); if (el) el.addEventListener(ev, fn); };
+  const typed = fn => { if (!editing) { snapshot(); editing = true; } fn(); save(); render(); };
+  const once = fn => { snapshot(); fn(); save(); render(); };
+  on('f-name', 'input', e => typed(() => { if (e.target.value.trim()) o.name = e.target.value.trim(); }));
+  on('f-allow', 'input', e => typed(() => { const v = parseFloat(e.target.value); if (v > 0) o.allowKw = v; }));
+  on('f-kw', 'input', e => typed(() => { const v = parseFloat(e.target.value); if (v >= 0) o.kw = v; }));
+  on('f-rating', 'change', e => once(() => o.rating = +e.target.value));
+  on('f-curve', 'change', e => once(() => o.curve = e.target.value));
+  on('f-model', 'change', e => once(() => { if (e.target.value) o.model = e.target.value; else delete o.model; }));
+  on('f-color', 'change', e => once(() => o.color = e.target.value));
+  const two = () => { o.color = document.getElementById('f-c1').value; o.color2 = document.getElementById('f-c2').value; };
+  on('f-c1', 'change', () => once(two));
+  on('f-c2', 'change', () => once(two));
+  on('f-rows', 'click', () => { once(() => { two(); o.split = 'rows'; }); renderInspector(); });
+  on('f-cols', 'click', () => { once(() => { two(); o.split = 'cols'; }); renderInspector(); });
+  on('f-on', 'click', () => { toggle(o.id); });
+  on('f-top', 'click', () => { if (terms(o)[0].s > 0) flip(o.id); });
+  on('f-bottom', 'click', () => { if (terms(o)[0].s < 0) flip(o.id); });
+  on('f-ln', 'click', () => { if (o.swap) swapLN(o.id); });
+  on('f-nl', 'click', () => { if (!o.swap) swapLN(o.id); });
+  on('f-n', 'change', e => once(() => {
+    o.n = +e.target.value;
+    const keep = new Set(terms(o).map(t => tk(o, t.k)));
+    S.wires = S.wires.filter(w => !((w.a.startsWith(o.id + ':') && !keep.has(w.a)) || (w.b.startsWith(o.id + ':') && !keep.has(w.b))));
+  }));
+  on('f-kind', 'change', e => { once(() => { if (Object.values(KINDS).includes(o.name)) o.name = KINDS[e.target.value]; o.kind = e.target.value; }); renderInspector(); });
+  on('f-mm', 'change', e => { once(() => cableOf(o).forEach(w => w.mm = +e.target.value)); if (o.cable) renderInspector(); });
+  on('f-split', 'click', () => { once(() => cableOf(o).forEach(w => delete w.cable)); renderInspector(); });
+  on('f-wL', 'click', () => { once(() => o.kind = 'L'); renderInspector(); });
+  on('f-wN', 'click', () => { once(() => o.kind = 'N'); renderInspector(); });
+  on('f-del', 'click', delSel);
+  on('f-min', 'click', () => { sheetMin = !sheetMin; renderInspector(); });
+  on('f-close', 'click', () => { pending = null; select(null); });
+  updateReadout();
+}
+$('#inspector').addEventListener('focusin', () => { editing = false; });
+
+/* ---------- действия ---------- */
+function select(s) { sel = s; renderInspector(); render(); }
+function toggle(id) {
+  const c = comp(id); if (!c) return;
+  snapshot(); c.on = !c.on; save();
+  sel = {kind: 'comp', id}; renderInspector(); render();
+  toast(`${c.name} ${c.on ? 'включён' : 'выключен'}`);
+}
+function flip(id) {
+  const c = comp(id); if (!c || c.type === 'node' || c.type === 'wago22') return;
+  snapshot(); c.flip = !c.flip; save(); renderInspector(); render();
+}
+function swapLN(id) {
+  const c = comp(id); if (!c || !CAN_SWAP[c.type]) return;
+  snapshot(); c.swap = !c.swap; save(); renderInspector(); render();
+}
+function delSel() {
+  if (!sel) return;
+  snapshot();
+  if (sel.kind === 'comp') { S.comps = S.comps.filter(c => c.id !== sel.id); S.wires = S.wires.filter(w => !w.a.startsWith(sel.id + ':') && !w.b.startsWith(sel.id + ':')); }
+  else { const gone = new Set(cableOf(selObj()).map(w => w.id)); S.wires = S.wires.filter(w => !gone.has(w.id)); }
+  sel = null; save(); renderInspector(); render();
+}
+function connect(a, b) {
+  if (S.wires.some(w => (w.a === a && w.b === b) || (w.a === b && w.b === a))) { toast('Эти клеммы уже соединены'); return; }
+  const ta = getTerm(a), tb = getTerm(b); if (!ta || !tb) return;
+  const ld = [ta.c, tb.c].find(c => c.type === 'load'), wg = [ta.c, tb.c].some(c => isWago(c) || c.type === 'node');
+  const kind = ta.r !== 'X' ? ta.r : tb.r !== 'X' ? tb.r : 'L';
+  const w = {id: uid('w'), a, b, kind, mm: ld ? KIND_MM[ld.kind] || 2.5 : wg ? 2.5 : 10};
+  snapshot(); S.wires.push(w); sel = {kind: 'wire', id: w.id}; save(); renderInspector();
+  toast(w.kind === 'L' ? 'Проложен провод фазы' : 'Проложен провод нуля');
+}
+// Пара для двухжильного провода: клемма другой роли на том же элементе и той же стороне (у счётчика 1↔3, 2↔4)
+function partner(key) {
+  const g = getTerm(key);
+  if (!g || (g.r !== 'L' && g.r !== 'N')) return null;
+  const ts = terms(g.c).filter(t => t.s === g.s);
+  const mates = ts.filter(t => t.r !== g.r && (t.r === 'L' || t.r === 'N')), same = ts.filter(t => t.r === g.r);
+  const m = mates[same.findIndex(t => t.k === g.t.k)] || mates[0];
+  return m ? tk(g.c, m.k) : null;
+}
+function connectCable(a, b) {
+  let a2 = partner(a), b2 = partner(b);
+  if (!a2 || !b2) { toast('Двухжильный провод идёт между клеммами L и N: ввод, автомат 2P, счётчик, потребитель'); return; }
+  if (getTerm(a).r !== getTerm(b).r) [b, b2] = [b2, b];
+  if (getTerm(a).r === 'N') [a, a2, b, b2] = [a2, a, b2, b];
+  if (a.split(':')[0] === b.split(':')[0]) { toast('Двухжильный провод соединяет два разных элемента'); return; }
+  const dup = (x, y) => S.wires.some(w => (w.a === x && w.b === y) || (w.a === y && w.b === x));
+  if (dup(a, b) || dup(a2, b2)) { toast('Эти клеммы уже соединены'); return; }
+  const ld = [getTerm(a).c, getTerm(b).c].find(c => c.type === 'load'), mm = ld ? KIND_MM[ld.kind] || 2.5 : 10;
+  snapshot();
+  const cable = uid('k'), w1 = {id: uid('w'), a, b, kind: 'L', mm, cable}, w2 = {id: uid('w'), a: a2, b: b2, kind: 'N', mm, cable};
+  S.wires.push(w1, w2); sel = {kind: 'wire', id: w1.id}; save(); renderInspector();
+  toast(`Проложен кабель 2×${fmt(mm, mm % 1 ? 1 : 0)}`);
+}
+const link = (a, b) => mode2 ? connectCable(a, b) : connect(a, b);
+const cableOf = w => w.cable ? S.wires.filter(x => x.cable === w.cable) : [w];
+function setMode(two) {
+  mode2 = two; pending = null;
+  $('#m-1').classList.toggle('on', !two); $('#m-2').classList.toggle('on', two);
+  $('#m-1').setAttribute('aria-pressed', !two); $('#m-2').setAttribute('aria-pressed', two);
+  render();
+}
+
+function nextName(prefix) {
+  const nums = S.comps.map(c => (c.name.match(new RegExp('^' + prefix + '(\\d+)$')) || [])[1]).filter(Boolean).map(Number);
+  return prefix + (nums.length ? Math.max(...nums) + 1 : 1);
+}
+function addComp(spec) {
+  const [type, kind] = spec.split(':');
+  const c = {id: '', type, x: 0, y: 0};
+  if (type === 'supply') Object.assign(c, {name: 'Ввод', allowKw: 10});
+  if (type === 'br1') Object.assign(c, {name: nextName('QF'), rating: 16, curve: 'C', on: true});
+  if (type === 'br2') Object.assign(c, {name: nextName('QF'), rating: 40, curve: 'C', on: true});
+  if (type === 'meter') Object.assign(c, {name: nextName('PI')}, kind === 'soviet' ? {model: 'soviet', kwh: 4217.3} : {});
+  if (type === 'fuse') Object.assign(c, {name: nextName('FU'), rating: 16, on: true});
+  if (type === 'wago22') Object.assign(c, {name: nextName('X'), color: 'orange', color2: 'blue', split: 'rows'});
+  if (type === 'nbus') Object.assign(c, {name: 'Шина N', n: 6});
+  if (type === 'wago') Object.assign(c, {name: nextName('X'), n: 3, color: 'mix'});
+  if (type === 'node') Object.assign(c, {name: nextName('Т')});
+  if (type === 'load') Object.assign(c, {name: KINDS[kind], kind, kw: KIND_KW[kind]});
+  snapshot();
+  c.id = uid('c');
+  const [vw, vh] = viewSize();
+  let x = snap(view.x + vw / 2 - cw(c) / 2), y = snap(view.y + vh / 2 - chh(c) / 2);
+  while (S.comps.some(o => o.x === x && o.y === y)) { x += 20; y += 20; }
+  c.x = x; c.y = y;
+  S.comps.push(c); sel = {kind: 'comp', id: c.id}; save(); renderInspector(); render();
+}
+
+/* ---------- мышь и касания ---------- */
+function pt(e) { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+svg.addEventListener('pointerdown', e => {
+  if (e.button > 0) return;
+  pointers.set(e.pointerId, {x: e.clientX, y: e.clientY});
+  if (pointers.size === 2) {  // два пальца — масштаб и сдвиг поля
+    const [a, b] = [...pointers.values()];
+    pending = null; drag = {mode: 'pinch', d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, z0: zoom, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2};
+    svg.setPointerCapture(e.pointerId); render(); return;
+  }
+  const p = pt(e), term = e.target.closest('[data-term]'), act = e.target.closest('[data-act]'),
+        cg = e.target.closest('[data-comp]'), wg = e.target.closest('[data-wire]');
+  svg.setPointerCapture(e.pointerId);
+  if (term) {
+    const key = term.dataset.term;
+    if (pending && pending !== key) { link(pending, key); pending = null; drag = null; render(); return; }
+    if (mode2 && !partner(key)) { toast('У этой клеммы нет пары L и N. Для неё тяните одну жилу.'); drag = null; return; }
+    pending = key; rubberAt = p; drag = {mode: 'wire', sx: e.clientX, sy: e.clientY, moved: false}; render(); return;
+  }
+  const hadPending = pending; pending = null;
+  if (act && cg) { drag = null; toggle(cg.dataset.comp); return; }
+  if (cg) {
+    const c = comp(cg.dataset.comp);
+    if (!sel || sel.id !== c.id) select({kind: 'comp', id: c.id}); else if (hadPending) render();
+    drag = {mode: 'move', id: c.id, ox: p.x - c.x, oy: p.y - c.y, sx: e.clientX, sy: e.clientY, moved: false}; return;
+  }
+  if (wg) { drag = null; select({kind: 'wire', id: wg.dataset.wire}); return; }
+  if (hadPending) render();
+  drag = {mode: 'pan', sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y, moved: false};
+});
+svg.addEventListener('pointermove', e => {
+  if (pointers.has(e.pointerId)) pointers.set(e.pointerId, {x: e.clientX, y: e.clientY});
+  if (pending) updateRubber(pt(e));
+  if (!drag) return;
+  if (drag.mode === 'pinch') {
+    if (pointers.size < 2) return;
+    const [a, b] = [...pointers.values()], mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    view.x -= (mx - drag.mx) / zoom; view.y -= (my - drag.my) / zoom; drag.mx = mx; drag.my = my;
+    zoomAt(mx, my, drag.z0 * Math.hypot(a.x - b.x, a.y - b.y) / drag.d0);
+    return;
+  }
+  const dist = Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy);
+  if (drag.mode === 'move') {
+    if (!drag.moved && dist < 4) return;
+    if (!drag.moved) { snapshot(); drag.moved = true; }
+    const c = comp(drag.id), p = pt(e);
+    const nx = snap(p.x - drag.ox), ny = snap(p.y - drag.oy);
+    if (nx !== c.x || ny !== c.y) { c.x = nx; c.y = ny; render(); }
+  } else if (drag.mode === 'pan') {
+    if (dist > 4) drag.moved = true;
+    view.x = drag.vx - (e.clientX - drag.sx) / zoom; view.y = drag.vy - (e.clientY - drag.sy) / zoom; applyView();
+  } else if (drag.mode === 'wire' && dist > 6) drag.moved = true;
+});
+function endPointer(e) {
+  pointers.delete(e.pointerId);
+  if (drag?.mode === 'pinch') { if (!pointers.size) drag = null; return; }
+  if (drag?.mode === 'wire') {
+    const el = document.elementFromPoint(e.clientX, e.clientY), t = el && el.closest && el.closest('[data-term]');
+    if (t && pending && t.dataset.term !== pending) { link(pending, t.dataset.term); pending = null; render(); }
+    else if (drag.moved) { pending = null; render(); }
+  }
+  if (drag?.mode === 'move' && drag.moved) save();
+  // на телефоне выделение снимается только крестиком, чтобы можно было листать схему
+  if (drag?.mode === 'pan' && !drag.moved && !coarse && sel) select(null);
+  drag = null;
+}
+svg.addEventListener('pointerup', endPointer);
+svg.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); drag = null; });
+// Колесо и тачпад двигают поле, Ctrl + колесо и щипок на тачпаде — масштаб под курсором
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  if (e.ctrlKey || e.metaKey) zoomAt(e.clientX, e.clientY, zoom * Math.exp(-e.deltaY * 0.01));
+  else { const k = e.deltaMode === 1 ? 16 : 1; view.x += e.deltaX * k / zoom; view.y += e.deltaY * k / zoom; applyView(); }
+}, {passive: false});
+
+document.addEventListener('keydown', e => {
+  const typing = /INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName || '') || $('#io').open;
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); return; }
+  if (typing) return;
+  if (e.key === 'Escape') { if (!sel && !pending && full) setFull(false); else { pending = null; select(null); } }
+  if ((e.key === 'Delete' || e.key === 'Backspace') && sel) { e.preventDefault(); delSel(); }
+  if ((e.code === 'KeyF') && !e.metaKey && !e.ctrlKey && sel?.kind === 'comp') { e.preventDefault(); flip(sel.id); }
+  if ((e.code === 'KeyS') && !e.metaKey && !e.ctrlKey && sel?.kind === 'comp') { e.preventDefault(); swapLN(sel.id); }
+});
+
+/* ---------- палитра и кнопки ---------- */
+const PAL = [
+  ['supply', 'Ввод', '230 В от этажного щита', '<rect x="3" y="7" width="26" height="18" rx="3" fill="var(--sup)"/><path d="M17 10l-5 7h4l-1 5 5-7h-4z" fill="var(--live)"/>', 'pal-panel'],
+  ['br2', 'Автомат 2P', 'вводной, рвёт фазу и ноль', '<rect x="5" y="3" width="22" height="26" rx="2" class="mod"/><rect x="10" y="11" width="12" height="10" rx="1.5" class="lv-slot"/><rect x="11" y="12" width="10" height="4.5" rx="1" fill="var(--accent)"/>', 'pal-panel'],
+  ['br1', 'Автомат 1P', 'защита линии по фазе', '<rect x="10" y="3" width="12" height="26" rx="2" class="mod"/><rect x="13" y="11" width="6" height="10" rx="1.5" class="lv-slot"/><rect x="14" y="12" width="4" height="4.5" rx="1" fill="var(--accent)"/>', 'pal-panel'],
+  ['fuse', 'Пробка', 'советская, автомат ПАР', '<rect x="6" y="2" width="20" height="28" rx="3" fill="var(--bakelite)"/><circle cx="16" cy="16" r="8.5" fill="var(--cap)"/><circle cx="16" cy="17" r="3.2" fill="var(--sov-red)"/>', 'pal-panel'],
+  ['meter:soviet', 'Счётчик СО-И446', 'советский, с диском', '<rect x="3" y="4" width="26" height="24" rx="4" fill="var(--bakelite)"/><rect x="6" y="8" width="20" height="10" rx="1.5" fill="var(--sov-glass)"/><rect x="8" y="10" width="13" height="4" fill="var(--bakelite)"/><rect x="21" y="10" width="3" height="4" fill="var(--sov-red)"/><rect x="8" y="15.5" width="16" height="1.6" rx=".8" fill="var(--sov-red)"/>', 'pal-panel'],
+  ['meter', 'Счётчик', 'однофазный, клеммы 1–4', '<rect x="3" y="4" width="26" height="24" rx="3" class="mtr"/><rect x="6" y="8" width="20" height="8" rx="1.5" class="lcd"/><circle cx="8" cy="21" r="1.6" fill="#e5352b"/>', 'pal-panel'],
+  ['nbus', 'Нулевая шина', 'общий ноль для линий', '<rect x="2" y="10" width="28" height="12" rx="2" class="bus-base"/><rect x="5" y="13.5" width="22" height="5" rx="1" class="brass"/>', 'pal-panel'],
+  ['wago', 'WAGO 221', 'соединяет провода, 2–5 гнёзд', '<rect x="3" y="8" width="26" height="17" rx="3" class="wago-body"/><rect x="5.5" y="10" width="6" height="6" rx="1" fill="#ee7a00"/><rect x="13" y="10" width="6" height="6" rx="1" fill="#2f6fd6"/><rect x="20.5" y="10" width="6" height="6" rx="1" fill="#d23b2a"/>', 'pal-panel'],
+  ['wago22', 'WAGO 2×2', 'проходная, два цвета', '<rect x="8" y="3" width="16" height="26" rx="3" class="wago-body"/><rect x="9.5" y="5" width="5.5" height="6" rx="1" fill="#ee7a00"/><rect x="17" y="5" width="5.5" height="6" rx="1" fill="#ee7a00"/><rect x="9.5" y="21" width="5.5" height="6" rx="1" fill="#2f6fd6"/><rect x="17" y="21" width="5.5" height="6" rx="1" fill="#2f6fd6"/>', 'pal-panel'],
+  ['node', 'Точка', 'развилка или поворот провода', '<circle cx="16" cy="16" r="11" class="node-body"/><circle cx="16" cy="16" r="4.5" fill="var(--screw)" stroke="var(--ink)" stroke-width="2"/><path d="M2 16h9M21 16h9M16 21v9" stroke="var(--wire-l)" stroke-width="2.4"/>', 'pal-panel'],
+  ...Object.keys(KINDS).map(k => ['load:' + k, KINDS[k], `${fmt(KIND_KW[k])} кВт · провод ${fmt(KIND_MM[k], KIND_MM[k] % 1 ? 1 : 0)} мм²`, `<g class="ico on" transform="translate(2,2)">${icon(k)}</g>`, 'pal-loads']),
+];
+for (const [spec, title, sub, glyph, where] of PAL) {
+  const b = document.createElement('button');
+  b.className = 'pal'; b.dataset.add = spec;
+  b.innerHTML = `<svg viewBox="0 0 32 32" aria-hidden="true">${glyph}</svg><span><b>${title}</b><small>${sub}</small></span>`;
+  b.addEventListener('click', () => { addComp(spec); app.classList.remove('pal-open'); });
+  document.getElementById(where).appendChild(b);
+}
+$('#m-1').addEventListener('click', () => setMode(false));
+$('#m-2').addEventListener('click', () => setMode(true));
+$('#b-undo').addEventListener('click', doUndo);
+$('#b-redo').addEventListener('click', doRedo);
+$('#b-example').addEventListener('click', () => { snapshot(); S = example(); sel = null; pending = null; save(); renderInspector(); render(); fitView(); toast('Загружен пример схемы'); });
+let clearT;
+$('#b-clear').addEventListener('click', e => {
+  const b = e.currentTarget;
+  if (!b.classList.contains('confirm')) { b.classList.add('confirm'); b.textContent = 'Точно очистить?'; clearT = setTimeout(() => { b.classList.remove('confirm'); b.textContent = 'Очистить'; }, 3000); return; }
+  clearTimeout(clearT); b.classList.remove('confirm'); b.textContent = 'Очистить';
+  snapshot(); S = {comps: [], wires: [], seq: 1}; sel = null; pending = null; save(); renderInspector(); render(); toast('Схема очищена. Отменить — Ctrl+Z');
+});
+$('#b-io').addEventListener('click', () => { $('#io-text').value = JSON.stringify(S, null, 1); $('#io-msg').textContent = ''; $('#io').showModal(); });
+$('#io-copy').addEventListener('click', () => {
+  const ta = $('#io-text');
+  navigator.clipboard.writeText(ta.value).then(() => { $('#io-msg').textContent = 'Скопировано.'; }, () => { ta.select(); $('#io-msg').textContent = 'Текст выделен — скопируйте его вручную (Ctrl+C).'; });
+});
+$('#io-apply').addEventListener('click', () => {
+  try {
+    const d = JSON.parse($('#io-text').value);
+    if (!valid(d)) throw 0;
+    d.seq = Math.max(d.seq || 1, 1 + Math.max(0, ...[...d.comps, ...d.wires].map(x => parseInt(String(x.id).slice(1)) || 0)));
+    snapshot(); S = d; sel = null; pending = null; save(); renderInspector(); render(); fitView(); $('#io').close(); toast('Схема загружена');
+  } catch (e) { $('#io-msg').textContent = 'Не получилось прочитать схему: нужен JSON с полями comps и wires, как в скопированном тексте.'; }
+});
+
+/* ---------- бесконечное поле ---------- */
+function viewSize() { const w = wrap.clientWidth || 900, h = wrap.clientHeight || 600; return [w / zoom, h / zoom]; }
+function applyView() {
+  const [vw, vh] = viewSize();
+  svg.setAttribute('viewBox', `${view.x} ${view.y} ${vw} ${vh}`);
+  const g = document.getElementById('gridbg');
+  if (g) { g.setAttribute('x', view.x); g.setAttribute('y', view.y); g.setAttribute('width', vw); g.setAttribute('height', vh); }
+  $('#z-val').textContent = Math.round(zoom * 100) + '%';
+}
+function zoomAt(cx, cy, z) {
+  const r = wrap.getBoundingClientRect(), nz = clamp(z, 0.2, 3);
+  const wx = view.x + (cx - r.left) / zoom, wy = view.y + (cy - r.top) / zoom;
+  zoom = nz; view.x = wx - (cx - r.left) / zoom; view.y = wy - (cy - r.top) / zoom;
+  applyView();
+}
+const zoomCenter = f => { const r = wrap.getBoundingClientRect(); zoomAt(r.left + r.width / 2, r.top + r.height / 2, zoom * f); };
+function fitView() {
+  if (!S.comps.length) { zoom = 1; view.x = 0; view.y = 0; applyView(); return; }
+  const x0 = Math.min(...S.comps.map(c => c.x)) - 60, y0 = Math.min(...S.comps.map(c => c.y)) - 60;
+  const x1 = Math.max(...S.comps.map(c => c.x + cw(c))) + 60, y1 = Math.max(...S.comps.map(c => c.y + chh(c))) + 60;
+  const w = wrap.clientWidth || 900, h = wrap.clientHeight || 600;
+  zoom = clamp(Math.min(w / (x1 - x0), h / (y1 - y0)), 0.2, 1.4);
+  view.x = (x0 + x1) / 2 - w / zoom / 2; view.y = (y0 + y1) / 2 - h / zoom / 2;
+  applyView();
+}
+$('#z-in').addEventListener('click', () => zoomCenter(1.2));
+$('#z-out').addEventListener('click', () => zoomCenter(1 / 1.2));
+$('#z-fit').addEventListener('click', fitView);
+$('#b-fit2').addEventListener('click', fitView);
+function setFull(on) {
+  full = on; app.classList.toggle('full', on);
+  // настоящий полноэкранный режим браузера — если разрешён; без него просто прячем всё, кроме схемы
+  try {
+    if (on && !document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
+    if (!on && document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+  } catch (e) {}
+}
+$('#b-full').addEventListener('click', () => setFull(true));
+$('#b-exit').addEventListener('click', () => setFull(false));
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && full) { full = false; app.classList.remove('full'); } });
+$('#b-add').addEventListener('click', () => app.classList.add('pal-open'));
+$('#b-pal-close').addEventListener('click', () => app.classList.remove('pal-open'));
+$('#scrim').addEventListener('click', () => app.classList.remove('pal-open'));
+if (window.ResizeObserver) new ResizeObserver(() => applyView()).observe(wrap);
+
+S = loadState();
+render();
+fitView();
+renderInspector();
+</script>
+
+</body>
+</html>
