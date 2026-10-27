@@ -257,6 +257,16 @@ dialog form{display:flex;flex-direction:column;gap:10px}
 dialog textarea{width:100%;box-sizing:border-box;height:220px;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:8px;font:12px/1.4 var(--f-mono);resize:vertical}
 dialog .dlg-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
 dialog p{margin:0;font-size:13px;color:var(--muted)}
+.sh-opts{display:grid;gap:8px}
+.sh-opts .btn{flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;white-space:normal;text-align:left}
+.sh-opts .btn b{font:600 14px var(--f-cond)}
+.sh-opts .btn small{font-size:12px;opacity:.8}
+#sh-text{height:auto;min-height:64px}
+/* ?view — только просмотр: без списка элементов и кнопок правки */
+.app.view{grid-template-columns:minmax(0,1fr)}
+.app.view .palette,.app.view .fab,.app.view .edit-only{display:none}
+.view-tag{display:none;font:600 11px var(--f-cond);letter-spacing:.07em;text-transform:uppercase;color:var(--accent);border:1px solid currentColor;border-radius:4px;padding:2px 6px;margin-left:8px;vertical-align:3px}
+.app.view .view-tag{display:inline-block}
 
 @media (max-width: 1100px){
   .app{grid-template-columns:190px minmax(0,1fr)}
@@ -301,16 +311,17 @@ dialog p{margin:0;font-size:13px;color:var(--muted)}
   <header class="top">
     <div class="brand">
       <svg viewBox="0 0 34 34" aria-hidden="true"><rect x="9" y="2" width="16" height="30" rx="2.5" fill="var(--module)" stroke="var(--module-edge)"/><rect x="13" y="11" width="8" height="12" rx="1.5" fill="var(--slot)"/><rect x="14" y="12" width="6" height="5.5" rx="1" fill="var(--accent)"/><circle cx="17" cy="5.5" r="2" fill="var(--wire-l)"/><circle cx="17" cy="28.5" r="2" fill="var(--wire-l)"/></svg>
-      <div><h1>Щиток</h1><p>Однофазная квартирная проводка, 230 В</p></div>
+      <div><h1>Щиток<span class="view-tag">Просмотр</span></h1><p>Однофазная квартирная проводка, 230 В</p></div>
     </div>
     <div class="stats" id="stats"></div>
     <div class="actions">
       <button class="btn primary" id="b-share" title="Ссылка на эту схему"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2M4.5 5.5 8 2l3.5 3.5M3 9v5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Поделиться</button>
-      <button class="btn" id="b-undo" title="Отменить (Ctrl+Z)">Отменить</button>
-      <button class="btn" id="b-redo" title="Повторить (Ctrl+Shift+Z)">Повторить</button>
-      <button class="btn" id="b-example">Пример</button>
-      <button class="btn" id="b-io">Схема в JSON</button>
-      <button class="btn" id="b-clear">Очистить</button>
+      <button class="btn" id="b-view" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg><span id="b-view-label">Просмотр</span></button>
+      <button class="btn edit-only" id="b-undo" title="Отменить (Ctrl+Z)">Отменить</button>
+      <button class="btn edit-only" id="b-redo" title="Повторить (Ctrl+Shift+Z)">Повторить</button>
+      <button class="btn edit-only" id="b-example">Пример</button>
+      <button class="btn edit-only" id="b-io">Схема в JSON</button>
+      <button class="btn edit-only" id="b-clear">Очистить</button>
     </div>
   </header>
 
@@ -366,6 +377,20 @@ dialog p{margin:0;font-size:13px;color:var(--muted)}
     </div>
   </main>
 </div>
+
+<dialog id="sh-dlg">
+  <form method="dialog">
+    <h2>Поделиться схемой</h2>
+    <p>Вся схема зашита в ссылку. Получатель откроет её у себя, ваша схема от этого не меняется.</p>
+    <div class="sh-opts">
+      <button class="btn primary" type="button" id="sh-view"><b>Только просмотр</b><small>можно смотреть и подсвечивать провода, менять нельзя</small></button>
+      <button class="btn" type="button" id="sh-edit"><b>С редактированием</b><small>получатель сможет менять свою копию схемы</small></button>
+    </div>
+    <textarea id="sh-text" readonly hidden aria-label="Ссылка на схему"></textarea>
+    <p id="sh-msg" aria-live="polite"></p>
+    <div class="dlg-actions"><button class="btn" value="close">Закрыть</button></div>
+  </form>
+</dialog>
 
 <dialog id="io">
   <form method="dialog">
@@ -499,7 +524,7 @@ function loadState() {
   try { const d = JSON.parse(localStorage.getItem(KEY)); if (valid(d)) return d; } catch (e) {}
   return JSON.parse(JSON.stringify(MY_SCHEME));
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} refreshShare(); }
+function save() { if (!VIEW) try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} refreshShare(); }
 
 /* ---------- ссылка на схему: схема сжимается прямо в адрес после #s= ---------- */
 const b64u = bytes => { let t = ''; for (let i = 0; i < bytes.length; i += 0x8000) t += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
@@ -515,13 +540,17 @@ async function decodeScheme(code) {
   return JSON.parse(new TextDecoder().decode(code[0] === 'z' ? await pipe(bytes, new DecompressionStream('deflate-raw')) : bytes));
 }
 // ссылка готовится заранее: копирование и системное меню должны срабатывать сразу по нажатию
-let shareUrl = '';
-function refreshShare() { encodeScheme(S).then(c => { shareUrl = location.origin + location.pathname + '#s=' + c; }).catch(() => {}); }
+let VIEW = new URLSearchParams(location.search).has('view'), viewingShared = false;  // ?view — только просмотр
+let shareCode = '';
+const shareLink = view => location.origin + location.pathname + (view ? '?view' : '') + '#s=' + shareCode;
+function refreshShare() { encodeScheme(S).then(c => { shareCode = c; }).catch(() => {}); }
 async function openShared() {
   const m = location.hash.match(/^#s=([\w-]+)$/); if (!m) return;
-  history.replaceState(null, '', location.pathname + location.search);
+  // в просмотре ссылка остаётся в адресе: её можно обновить и переслать дальше
+  if (!VIEW) history.replaceState(null, '', location.pathname + location.search);
   try {
     const d = await decodeScheme(m[1]); if (!valid(d)) throw 0;
+    if (VIEW) { S = d; viewingShared = true; sel = null; renderInspector(); render(); fitView(); refreshShare(); return; }
     if (JSON.stringify(d) === JSON.stringify(S)) return;
     snapshot(); S = d; sel = null; pending = null; save(); renderInspector(); render(); fitView();
     toast('Открыта схема по ссылке. Вернуть свою — «Отменить»');
@@ -855,6 +884,7 @@ function renderStats() {
 function updateHint() {
   const h = $('#hint');
   h.classList.toggle('active', !!pending);
+  if (VIEW) { h.textContent = coarse ? 'Только просмотр. Коснитесь элемента — подсветятся его провода.' : 'Только просмотр. Нажмите на элемент — подсветятся его провода. Поле двигается мышью, Ctrl + колесо — масштаб.'; return; }
   h.textContent = pending
     ? (mode2 ? 'Выберите клемму L или N на другом элементе, вторая жила встанет сама. Esc — отмена.' : 'Выберите вторую клемму. Esc — отмена.')
     : (mode2 ? 'Двухжильный провод: от клеммы L или N, вторая жила подключится к соседней.' : coarse ? 'Коснитесь клеммы, потом второй — будет провод. Двумя пальцами — масштаб.' : 'Тяните провод от клеммы к клемме. Пустое место — двигать поле, Ctrl + колесо — масштаб.');
@@ -897,6 +927,13 @@ function renderInspector() {
   let h;
   box.hidden = !o; box.classList.toggle('min', sheetMin); box.parentElement.classList.toggle('has-sheet', !!o);
   if (!o) { box.innerHTML = ''; return; }
+  const head = t => `<div class="sh-head"><h3>${t}</h3><button class="btn icon" id="f-min" aria-label="${sheetMin ? 'Развернуть' : 'Свернуть'}">${sheetMin ? '▴' : '▾'}</button><button class="btn icon" id="f-close" aria-label="Снять выбор">×</button></div>`;
+  if (VIEW) {  // в просмотре — только название и показания
+    box.innerHTML = head(sel.kind === 'wire' ? (o.cable ? 'Кабель 2×' + fmt(o.mm, o.mm % 1 ? 1 : 0) : (o.kind === 'L' ? 'Провод фазы' : 'Провод нуля') + ', ' + fmt(o.mm, o.mm % 1 ? 1 : 0) + ' мм²') : esc(o.name) + ' · ' + TITLE[o.type]) + '<div class="readout" id="readout"></div>';
+    $('#f-min').addEventListener('click', () => { sheetMin = !sheetMin; renderInspector(); });
+    $('#f-close').addEventListener('click', () => select(null));
+    updateReadout(); return;
+  }
   if (sel.kind === 'wire' && o.cable) {
     h = `<div class="sh-head"><h3>Кабель 2×${fmt(o.mm, o.mm % 1 ? 1 : 0)}</h3><button class="btn icon" id="f-min" aria-label="${sheetMin ? 'Развернуть' : 'Свернуть'}">${sheetMin ? '▴' : '▾'}</button><button class="btn icon" id="f-close" aria-label="Снять выбор">×</button></div>
       <p class="lead">Фаза и ноль в одной оболочке, как ВВГнг 2×${fmt(o.mm, o.mm % 1 ? 1 : 0)}.</p>
@@ -992,7 +1029,7 @@ $('#inspector').addEventListener('focusin', () => { editing = false; });
 /* ---------- действия ---------- */
 function select(s) { sel = s; renderInspector(); render(); }
 function toggle(id) {
-  const c = comp(id); if (!c) return;
+  const c = comp(id); if (!c || VIEW) return;
   snapshot(); c.on = !c.on; save();
   sel = {kind: 'comp', id}; renderInspector(); render();
   toast(`${c.name} ${c.on ? 'включён' : 'выключен'}`);
@@ -1092,6 +1129,12 @@ svg.addEventListener('pointerdown', e => {
   const p = pt(e), term = e.target.closest('[data-term]'), act = e.target.closest('[data-act]'),
         cg = e.target.closest('[data-comp]'), wg = e.target.closest('[data-wire]');
   svg.setPointerCapture(e.pointerId);
+  if (VIEW) {  // только выбрать, чтобы подсветить провода; поле двигается откуда угодно
+    if (cg) { if (!sel || sel.id !== cg.dataset.comp) select({kind: 'comp', id: cg.dataset.comp}); }
+    else if (wg) select({kind: 'wire', id: wg.dataset.wire});
+    drag = {mode: 'pan', sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y, moved: !!(cg || wg)};
+    return;
+  }
   if (term) {
     const key = term.dataset.term;
     if (pending && pending !== key) { link(pending, key); pending = null; drag = null; render(); return; }
@@ -1156,9 +1199,10 @@ svg.addEventListener('wheel', e => {
 
 document.addEventListener('keydown', e => {
   const typing = /INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName || '') || $('#io').open;
-  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); return; }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !typing && !VIEW) { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); return; }
   if (typing) return;
   if (e.key === 'Escape') { if (!sel && !pending && full) setFull(false); else { pending = null; select(null); } }
+  if (VIEW) return;
   if ((e.key === 'Delete' || e.key === 'Backspace') && sel) { e.preventDefault(); delSel(); }
   if ((e.code === 'KeyF') && !e.metaKey && !e.ctrlKey && sel?.kind === 'comp') { e.preventDefault(); flip(sel.id); }
   if ((e.code === 'KeyS') && !e.metaKey && !e.ctrlKey && sel?.kind === 'comp') { e.preventDefault(); swapLN(sel.id); }
@@ -1199,13 +1243,40 @@ $('#b-clear').addEventListener('click', e => {
 });
 $('#b-io').addEventListener('click', () => { $('#io-title').textContent = 'Схема в JSON'; $('#io-apply').hidden = false; $('#io-text').value = JSON.stringify(S, null, 1); $('#io-msg').textContent = ''; $('#io').showModal(); });
 function showLink(url, msg) { $('#io-title').textContent = 'Ссылка на схему'; $('#io-apply').hidden = true; $('#io-text').value = url; $('#io-msg').textContent = msg; $('#io').showModal(); $('#io-text').select(); }
+// Отдать ссылку: на телефоне — системное меню, иначе — в буфер; если нельзя, показать текстом
+function sendLink(url, inDialog) {
+  const say = t => inDialog ? ($('#sh-msg').textContent = t) : toast(t);
+  const manual = () => { if (inDialog) { const ta = $('#sh-text'); ta.hidden = false; ta.value = url; ta.select(); say('Скопируйте ссылку вручную.'); } else showLink(url, 'Скопируйте ссылку вручную.'); };
+  if (coarse && navigator.share) { navigator.share({title: 'Схема щитка', url}).then(() => inDialog && $('#sh-dlg').close(), e => { if (e.name !== 'AbortError') manual(); }); return; }
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(url).then(() => { say('Ссылка скопирована'); if (inDialog) setTimeout(() => $('#sh-dlg').close(), 700); }, manual);
+  else manual();
+}
 $('#b-share').addEventListener('click', () => {
-  const url = shareUrl;
-  if (!url) { toast('Ссылка ещё готовится, нажмите ещё раз'); refreshShare(); return; }
-  if (coarse && navigator.share) { navigator.share({title: 'Схема щитка', url}).catch(e => { if (e.name !== 'AbortError') showLink(url, 'Скопируйте ссылку и отправьте её.'); }); return; }
-  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(url).then(() => toast('Ссылка на схему скопирована'), () => showLink(url, 'Скопируйте ссылку вручную (Ctrl+C).'));
-  else showLink(url, 'Скопируйте ссылку вручную (Ctrl+C).');
+  if (!shareCode) { toast('Ссылка ещё готовится, нажмите ещё раз'); refreshShare(); return; }
+  if (VIEW) { sendLink(shareLink(true), false); return; }
+  $('#sh-text').hidden = true; $('#sh-msg').textContent = ''; $('#sh-dlg').showModal();
 });
+// Кнопка «Просмотр»/«Редактировать»: переключает режим и ?view в адресе
+function setView(on, init) {
+  VIEW = on; pending = null; drag = null;
+  app.classList.toggle('view', on);
+  $('#b-view-label').textContent = on ? 'Редактировать' : 'Просмотр';
+  $('#b-view').setAttribute('aria-pressed', on);
+  $('#b-view').title = on ? 'Вернуться к редактированию' : 'Только просмотр, без изменений';
+  if (init) { /* при загрузке адрес не трогаем: в нём может быть схема */ }
+  else if (on) history.replaceState(null, '', location.pathname + '?view' + location.hash);
+  else {
+    history.replaceState(null, '', location.pathname);
+    if (viewingShared) {  // чужая схема из ссылки становится своей копией; своя — на шаг «Отменить»
+      viewingShared = false; undo.push(JSON.stringify(loadState())); redo = []; save();
+      toast('Схема из ссылки теперь ваша. Вернуть свою — «Отменить»');
+    }
+  }
+  renderInspector(); render();
+}
+$('#b-view').addEventListener('click', () => setView(!VIEW));
+$('#sh-view').addEventListener('click', () => sendLink(shareLink(true), true));
+$('#sh-edit').addEventListener('click', () => sendLink(shareLink(false), true));
 window.addEventListener('hashchange', openShared);
 $('#io-copy').addEventListener('click', () => {
   const ta = $('#io-text');
@@ -1268,7 +1339,7 @@ if (window.ResizeObserver) new ResizeObserver(() => applyView()).observe(wrap);
 S = loadState();
 render();
 fitView();
-renderInspector();
+setView(VIEW, true);
 refreshShare();
 openShared();
 </script>
